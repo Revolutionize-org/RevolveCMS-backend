@@ -1,0 +1,40 @@
+version: '1.0'
+
+services:
+  graphql:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - postgres
+    command: air
+  postgres:
+    image: postgres:16
+    restart: always
+    hostname: postgres
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'pg_isready',
+          '-q',
+          '-d',
+          '${POSTGRES_DB}',
+          '-U',
+          '${POSTGRES_USER}',
+        ]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - '${POSTGRES_PORT}:5432'
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+
+volumes:
+  postgres-db:
