@@ -1,4 +1,4 @@
-package graph
+package gql
 
 // This file will be automatically regenerated based on the schema, any resolver implementations
 // will be copied through when generating and any unknown code will be moved to the end.
@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Revolutionize-org/RevolveCMS-backend/graph/model"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
 )
 
 // CreateTodo is the resolver for the createTodo field.

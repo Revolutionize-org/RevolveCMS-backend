@@ -1,4 +1,5 @@
-package graph
+//go:generate go run github.com/99designs/gqlgen generate
+package gql
 
 // This file will not be regenerated automatically.
 //
