@@ -1,0 +1,1 @@
+DROP INDEX idx_footer_id ON website(footer_id);
