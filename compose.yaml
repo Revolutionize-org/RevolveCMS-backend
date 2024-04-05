@@ -7,7 +7,8 @@ services:
       - .:/usr/src/app
     depends_on:
       - postgres
-    command: air
+    ports:
+      - '3000:3000'
   postgres:
     image: postgres:16
     restart: always
