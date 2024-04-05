@@ -24,3 +24,6 @@ go.work
 
 # air
 tmp/*
+
+# code
+.vscode
