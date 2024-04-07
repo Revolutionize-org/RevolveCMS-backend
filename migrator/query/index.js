@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import path from 'path';
 
-import bcrypt from 'bcrypt';
+import argon2 from 'argon2';
 import { v4 as uuidv4 } from 'uuid';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -41,7 +41,7 @@ function createClient() {
 
 async function createUser(client, name, email, password, role_id) {
   const uuid = uuidv4();
-  const password_hash = bcrypt.hashSync(password, 10);
+  const password_hash = await argon2.hash(password);
 
   const query = `INSERT INTO 
   users(id, name, email, password_hash, role_id) 
