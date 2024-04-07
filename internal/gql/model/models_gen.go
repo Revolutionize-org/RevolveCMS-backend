@@ -2,25 +2,18 @@
 
 package model
 
-type Mutation struct {
+type AuthToken struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
 }
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+type Mutation struct {
 }
 
 type Query struct {
 }
 
-type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
-}
-
-type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+type UserInfo struct {
+	Email    string `json:"email", validate:"required,email"`
+	Password string `json:"password" validate:"required,min=8,max=32"` 
 }

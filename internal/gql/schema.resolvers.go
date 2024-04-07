@@ -11,14 +11,14 @@ import (
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
 )
 
-// CreateTodo is the resolver for the createTodo field.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
+// Login is the resolver for the login field.
+func (r *mutationResolver) Login(ctx context.Context, userInfo model.UserInfo) (*model.AuthToken, error) {
+	panic(fmt.Errorf("not implemented: Login - login"))
 }
 
-// Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
+// Me is the resolver for the me field.
+func (r *queryResolver) Me(ctx context.Context, id string) (*model.User, error) {
+	panic(fmt.Errorf("not implemented: Me - me"))
 }
 
 // Mutation returns MutationResolver implementation.
