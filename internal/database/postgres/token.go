@@ -1,18 +1,15 @@
 package postgres
 
 import (
-	"database/sql"
-
 	"github.com/go-pg/pg/v10"
 	"github.com/google/uuid"
 	"github.com/matthewhartstonge/argon2"
 )
 
 type Token struct {
-	tableName struct{}     `pg:"token"`
-	ID        string       `json:"id"`
-	Token     string       `json:"token"`
-	IsRevoked sql.NullBool `json:"is_revoked" pg:"is_revoked,default:false"`
+	tableName struct{} `pg:"token"`
+	ID        string   `json:"id"`
+	Token     string   `json:"token"`
 }
 
 type TokenRepo struct {
@@ -36,10 +33,6 @@ func (tr *TokenRepo) Add(t string) error {
 	token := &Token{
 		ID:    uuid.String(),
 		Token: string(tokenHash),
-		IsRevoked: sql.NullBool{
-			Bool:  false,
-			Valid: true,
-		},
 	}
 
 	_, err = tr.DB.Model(token).Insert()

@@ -1,5 +1,4 @@
 CREATE TABLE token(
     id UUID PRIMARY KEY,
-    token TEXT NOT NULL UNIQUE,
-    is_revoked BOOLEAN NOT NULL
+    token TEXT NOT NULL UNIQUE
 )
