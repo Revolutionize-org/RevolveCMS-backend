@@ -6,6 +6,10 @@
 
 docker compose up --build
 
+> Backend
+
+The service run on port 3000 on the endpoint /graphql
+
 > Run migration
 
 docker build -t migrator ./migrator
