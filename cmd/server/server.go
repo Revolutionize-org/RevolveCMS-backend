@@ -20,15 +20,31 @@ const defaultPort = "5000"
 
 func main() {
 	err := godotenv.Load()
-
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+
+	port := getPort()
+	db := connectToDB()
+	defer db.Close()
+
+	srv := createGraphQLServer(db)
+
+	setupHTTPHandlers(srv)
+
+	log.Printf("Connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
+}
+
+func getPort() string {
 	port := os.Getenv("API_PORT")
 	if port == "" {
 		port = defaultPort
 	}
+	return port
+}
 
+func connectToDB() *pg.DB {
 	db := postgres.New(&pg.Options{
 		Addr:       "host.docker.internal:5432",
 		User:       os.Getenv("POSTGRES_USER"),
@@ -37,21 +53,23 @@ func main() {
 		MaxRetries: 3,
 		PoolSize:   10,
 	})
-	defer db.Close()
 
 	db.AddQueryHook(postgres.DBLogger{})
+	return db
+}
 
-	srv := handler.NewDefaultServer(gql.NewExecutableSchema(
-		gql.Config{Resolvers: &resolver.Resolver{
-			UserRepo:  &postgres.UserRepo{DB: db},
-			TokenRepo: &postgres.TokenRepo{DB: db},
-		}}))
+func createGraphQLServer(db *pg.DB) http.Handler {
+	return middleware.Writer(handler.NewDefaultServer(gql.NewExecutableSchema(
+		gql.Config{
+			Resolvers: &resolver.Resolver{
+				UserRepo:  &postgres.UserRepo{DB: db},
+				TokenRepo: &postgres.TokenRepo{DB: db},
+			},
+		},
+	)))
+}
 
-	middlewareHandler := middleware.Writer(srv)
-
+func setupHTTPHandlers(srv http.Handler) {
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", middlewareHandler)
-
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	http.Handle("/query", middleware.Writer(srv))
 }
