@@ -19,7 +19,7 @@ type mutationResolver struct{ *Resolver }
 func (r *Resolver) Mutation() gql.MutationResolver { return &mutationResolver{r} }
 
 func (r *mutationResolver) Login(ctx context.Context, userInfo model.UserInfo) (*model.AuthToken, error) {
-	if err := validation.ValidateInput(ctx, userInfo); err != nil {
+	if err := validation.ValidateInput[model.UserInfo](ctx, userInfo); err != nil {
 		return nil, err
 	}
 

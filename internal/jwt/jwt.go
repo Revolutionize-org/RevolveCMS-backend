@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func New(data interface{}, secret string) (string, error) {
+func New(data any, secret string) (string, error) {
 	var token *jwt.Token
 
 	switch v := data.(type) {

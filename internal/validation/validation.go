@@ -16,15 +16,15 @@ func init() {
 	validate = validator.New()
 }
 
-func ValidateStruct(data interface{}) validator.ValidationErrors {
+func ValidateStruct[T any](data T) validator.ValidationErrors {
 	if err := validate.Struct(data); err != nil {
 		return err.(validator.ValidationErrors)
 	}
 	return nil
 }
 
-func ValidateInput(ctx context.Context, data interface{}) error {
-	validErr := ValidateStruct(data)
+func ValidateInput[T any](ctx context.Context, data T) error {
+	validErr := ValidateStruct[T](data)
 
 	if len(validErr) > 0 {
 		for _, err := range validErr {
