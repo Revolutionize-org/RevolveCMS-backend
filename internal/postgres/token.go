@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"github.com/go-pg/pg/v10"
-	"github.com/google/uuid"
 	"github.com/matthewhartstonge/argon2"
 )
 
@@ -24,7 +23,7 @@ func (tr *TokenRepo) Get(uuid string) (*Token, error) {
 	return token, err
 }
 
-func (tr *TokenRepo) Add(uuid uuid.UUID, t string) error {
+func (tr *TokenRepo) Add(uuid string, t string) error {
 	argon := argon2.DefaultConfig()
 
 	tokenHash, err := argon.HashEncoded([]byte(t))
@@ -34,7 +33,7 @@ func (tr *TokenRepo) Add(uuid uuid.UUID, t string) error {
 	}
 
 	token := &Token{
-		ID:    uuid.String(),
+		ID:    uuid,
 		Token: string(tokenHash),
 	}
 

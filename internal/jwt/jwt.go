@@ -3,6 +3,7 @@ package jwt
 import (
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
@@ -54,4 +55,14 @@ func Parse(t, secret string) (jwt.MapClaims, error) {
 		return claims, nil
 	}
 	return nil, errors.New("invalid token")
+}
+
+func CreateRefreshToken() (string, string, error) {
+	uuid, err := uuid.NewRandom()
+	if err != nil {
+		return "", "", err
+	}
+
+	refreshToken, err := New(uuid, os.Getenv("REFRESH_TOKEN_SECRET"))
+	return uuid.String(), refreshToken, err
 }

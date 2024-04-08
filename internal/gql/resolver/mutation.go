@@ -12,7 +12,6 @@ import (
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/request"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/validation"
-	"github.com/google/uuid"
 )
 
 type mutationResolver struct{ *Resolver }
@@ -38,15 +37,7 @@ func (r *mutationResolver) Login(ctx context.Context, userInfo model.UserInfo) (
 		return nil, err
 	}
 
-	uuid, err := uuid.NewRandom()
-	if err != nil {
-		return nil, err
-	}
-
-	refreshToken, err := jwt.New(uuid, os.Getenv("REFRESH_TOKEN_SECRET"))
-	if err != nil {
-		return nil, err
-	}
+	uuid, refreshToken, err := jwt.CreateRefreshToken()
 
 	if err := r.TokenRepo.Add(uuid, refreshToken); err != nil {
 		return nil, err
