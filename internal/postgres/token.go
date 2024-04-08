@@ -16,12 +16,15 @@ type TokenRepo struct {
 	DB *pg.DB
 }
 
-func (tr *TokenRepo) Add(t string) error {
-	uuid, err := uuid.NewRandom()
-	if err != nil {
-		return err
+func (tr *TokenRepo) Get(uuid string) (*Token, error) {
+	token := &Token{
+		ID: uuid,
 	}
+	err := tr.DB.Model(token).Where("id = ?", uuid).Select()
+	return token, err
+}
 
+func (tr *TokenRepo) Add(uuid uuid.UUID, t string) error {
 	argon := argon2.DefaultConfig()
 
 	tokenHash, err := argon.HashEncoded([]byte(t))
@@ -38,4 +41,16 @@ func (tr *TokenRepo) Add(t string) error {
 	_, err = tr.DB.Model(token).Insert()
 
 	return err
+}
+
+func (tr *TokenRepo) Delete(id string) (bool, error) {
+	token := &Token{
+		ID: id,
+	}
+	result, err := tr.DB.Model(token).Where("id = ?", token.ID).Delete()
+
+	if err != nil {
+		return false, err
+	}
+	return result.RowsAffected() > 0, nil
 }

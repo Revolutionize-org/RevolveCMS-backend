@@ -9,9 +9,10 @@ import (
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/hashing"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/jwt"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/request"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/validation"
-	"github.com/go-pg/pg"
+	"github.com/google/uuid"
 )
 
 type mutationResolver struct{ *Resolver }
@@ -24,16 +25,12 @@ func (r *mutationResolver) Login(ctx context.Context, userInfo model.UserInfo) (
 	}
 
 	user, err := r.UserRepo.GetByEmail(userInfo.Email)
-	if err != nil {
-		if err.Error() == pg.ErrNoRows.Error() {
-			return nil, errors.New("invalid email or password")
-		}
+	if err := postgres.CheckErrNoRows(err, "invalid email or password"); err != nil {
 		return nil, err
 	}
 
-	if err := hashing.CompareHashAndPassword(user.PasswordHash, userInfo.Password); err != nil {
+	if err := hashing.CompareHashAndSecret(user.PasswordHash, userInfo.Password); err != nil {
 		return nil, errors.New("invalid email or password")
-
 	}
 
 	accessToken, err := jwt.New(user, os.Getenv("ACCESS_TOKEN_SECRET"))
@@ -41,12 +38,17 @@ func (r *mutationResolver) Login(ctx context.Context, userInfo model.UserInfo) (
 		return nil, err
 	}
 
-	refreshToken, err := jwt.New(user, os.Getenv("REFRESH_TOKEN_SECRET"))
+	uuid, err := uuid.NewRandom()
 	if err != nil {
 		return nil, err
 	}
 
-	if err := r.TokenRepo.Add(refreshToken); err != nil {
+	refreshToken, err := jwt.New(uuid, os.Getenv("REFRESH_TOKEN_SECRET"))
+	if err != nil {
+		return nil, err
+	}
+
+	if err := r.TokenRepo.Add(uuid, refreshToken); err != nil {
 		return nil, err
 	}
 
@@ -59,4 +61,35 @@ func (r *mutationResolver) Login(ctx context.Context, userInfo model.UserInfo) (
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil
+}
+
+func (r *mutationResolver) Logout(ctx context.Context, refreshToken string) (bool, error) {
+	claims, err := jwt.Parse(refreshToken, os.Getenv("REFRESH_TOKEN_SECRET"))
+	if err != nil {
+		return false, err
+	}
+
+	tokenId, err := claims.GetSubject()
+	if err != nil {
+		return false, err
+	}
+
+	hashedToken, err := r.TokenRepo.Get(tokenId)
+	if err := postgres.CheckErrNoRows(err, "invalid token"); err != nil {
+		return false, err
+	}
+
+	if err := hashing.CompareHashAndSecret(hashedToken.Token, refreshToken); err != nil {
+		return false, errors.New("invalid token")
+	}
+
+	deleted, err := r.TokenRepo.Delete(tokenId)
+	if err != nil {
+		return false, err
+	}
+
+	if !deleted {
+		return false, errors.New("could not delete token")
+	}
+	return true, nil
 }

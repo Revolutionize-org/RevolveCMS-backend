@@ -1,7 +1,7 @@
 //go:generate go run github.com/99designs/gqlgen
 package resolver
 
-import "github.com/Revolutionize-org/RevolveCMS-backend/internal/database/postgres"
+import "github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
 
 // This file will not be regenerated automatically.
 //

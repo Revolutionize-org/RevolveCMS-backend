@@ -7,10 +7,11 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/Revolutionize-org/RevolveCMS-backend/internal/database/postgres"
+
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/resolver"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/middleware"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
 	"github.com/go-pg/pg/v10"
 	"github.com/joho/godotenv"
 )
