@@ -70,6 +70,6 @@ func createGraphQLServer(db *pg.DB) http.Handler {
 }
 
 func setupHTTPHandlers(srv http.Handler) {
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", middleware.Writer(srv))
+	http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+	http.Handle("/graphql", middleware.Writer(srv))
 }
