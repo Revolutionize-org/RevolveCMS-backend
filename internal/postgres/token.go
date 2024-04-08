@@ -1,14 +1,17 @@
 package postgres
 
 import (
+	"time"
+
 	"github.com/go-pg/pg/v10"
 	"github.com/matthewhartstonge/argon2"
 )
 
 type Token struct {
-	tableName struct{} `pg:"token"`
-	ID        string   `json:"id"`
-	Token     string   `json:"token"`
+	tableName struct{}  `pg:"token"`
+	ID        string    `json:"id"`
+	Token     string    `json:"token"`
+	ExpiresAt time.Time `json:"expires_at"`
 }
 
 type TokenRepo struct {
@@ -33,8 +36,9 @@ func (tr *TokenRepo) Add(uuid string, t string) error {
 	}
 
 	token := &Token{
-		ID:    uuid,
-		Token: string(tokenHash),
+		ID:        uuid,
+		Token:     string(tokenHash),
+		ExpiresAt: time.Now().Add(time.Hour * 24 * 90),
 	}
 
 	_, err = tr.DB.Model(token).Insert()
