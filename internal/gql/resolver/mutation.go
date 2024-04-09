@@ -38,6 +38,9 @@ func (r *mutationResolver) Login(ctx context.Context, userInfo model.UserInfo) (
 	}
 
 	uuid, refreshToken, err := jwt.CreateRefreshToken()
+	if err != nil {
+		return nil, err
+	}
 
 	if err := r.TokenRepo.Add(uuid, refreshToken); err != nil {
 		return nil, err
@@ -83,4 +86,8 @@ func (r *mutationResolver) Logout(ctx context.Context, refreshToken string) (boo
 		return false, errors.New("could not delete token")
 	}
 	return true, nil
+}
+
+func (r *mutationResolver) RefreshToken(ctx context.Context, refreshToken string) (string, error) {
+	return "", nil
 }

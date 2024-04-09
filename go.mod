@@ -4,7 +4,6 @@ go 1.22.1
 
 require (
 	github.com/99designs/gqlgen v0.17.45
-	github.com/go-pg/pg v8.0.7+incompatible
 	github.com/go-pg/pg/v10 v10.12.0
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
