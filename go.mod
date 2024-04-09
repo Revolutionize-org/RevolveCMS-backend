@@ -26,6 +26,7 @@ require (
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/lhecker/argon2 v2.0.0+incompatible // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/rs/cors v1.10.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sosodev/duration v1.2.0 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect

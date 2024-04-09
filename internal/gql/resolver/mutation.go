@@ -63,26 +63,12 @@ func (r *mutationResolver) Logout(ctx context.Context) (bool, error) {
 		return false, nil
 	}
 
-	claims, err := jwt.Parse(token, os.Getenv("REFRESH_TOKEN_SECRET"))
+	id, err := jwt.Validate(token, r.TokenRepo)
 	if err != nil {
 		return false, err
 	}
 
-	tokenId, err := claims.GetSubject()
-	if err != nil {
-		return false, err
-	}
-
-	hashedToken, err := r.TokenRepo.Get(tokenId)
-	if err := postgres.CheckErrNoRows(err, "invalid token"); err != nil {
-		return false, err
-	}
-
-	if err := hashing.CompareHashAndSecret(hashedToken.Token, token); err != nil {
-		return false, errors.New("invalid token")
-	}
-
-	deleted, err := r.TokenRepo.Delete(tokenId)
+	deleted, err := r.TokenRepo.Delete(id)
 	if err != nil {
 		return false, err
 	}
@@ -97,6 +83,22 @@ func (r *mutationResolver) Logout(ctx context.Context) (bool, error) {
 	return true, nil
 }
 
-func (r *mutationResolver) RefreshToken(ctx context.Context, refreshToken string) (string, error) {
+func (r *mutationResolver) RefreshToken(ctx context.Context) (string, error) {
+	token, err := cookie.GetFromContext(ctx, "refresh_token")
+	if err != nil {
+		return "", err
+	}
+
+	_, err = jwt.Validate(token, r.TokenRepo)
+	if err != nil {
+		return "", err
+	}
+
+	// accessToken, err := jwt.New(id, os.Getenv("ACCESS_TOKEN_SECRET"))
+	// if err != nil {
+	// 	return "", nil
+	// }
+
+	// return accessToken, nil
 	return "", nil
 }

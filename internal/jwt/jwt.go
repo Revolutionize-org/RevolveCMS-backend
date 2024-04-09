@@ -7,9 +7,15 @@ import (
 	"time"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/hashing"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
+
+type RefreshTokenPayload struct {
+	UserID uuid.UUID
+}
 
 func New(data any, secret string) (string, error) {
 	var token *jwt.Token
@@ -65,4 +71,27 @@ func CreateRefreshToken() (string, string, error) {
 
 	refreshToken, err := New(uuid, os.Getenv("REFRESH_TOKEN_SECRET"))
 	return uuid.String(), refreshToken, err
+}
+
+func Validate(token string, tokenRepo *postgres.TokenRepo) (string, error) {
+	claims, err := Parse(token, os.Getenv("REFRESH_TOKEN_SECRET"))
+	if err != nil {
+		return "", err
+	}
+
+	tokenId, err := claims.GetSubject()
+	if err != nil {
+		return "", err
+	}
+
+	hashedToken, err := tokenRepo.Get(tokenId)
+	if err := postgres.CheckErrNoRows(err, "invalid token"); err != nil {
+		return "", err
+	}
+
+	if err := hashing.CompareHashAndSecret(hashedToken.Token, token); err != nil {
+		return "", errors.New("invalid token")
+	}
+
+	return tokenId, nil
 }

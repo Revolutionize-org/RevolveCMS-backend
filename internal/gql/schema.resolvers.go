@@ -22,7 +22,7 @@ func (r *mutationResolver) Logout(ctx context.Context) (bool, error) {
 }
 
 // RefreshToken is the resolver for the refreshToken field.
-func (r *mutationResolver) RefreshToken(ctx context.Context, token string) (string, error) {
+func (r *mutationResolver) RefreshToken(ctx context.Context) (string, error) {
 	panic(fmt.Errorf("not implemented: RefreshToken - refreshToken"))
 }
 

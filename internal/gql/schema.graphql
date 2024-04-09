@@ -23,5 +23,5 @@ type Query {
 type Mutation {
   login(userInfo: UserInfo!): AuthToken!
   logout: Boolean!
-  refreshToken(token: String!): String!
+  refreshToken: String!
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/rs/cors"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/resolver"
@@ -70,8 +71,13 @@ func createGraphQLServer(db *pg.DB) http.Handler {
 }
 
 func setupHTTPHandlers(srv http.Handler) {
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:8080"},
+		AllowCredentials: true,
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+	})
 	http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
-	http.Handle("/graphql", middleware.Request(
-		middleware.Writer(srv)),
-	)
+	http.Handle("/graphql", c.Handler(
+		middleware.Request(
+			middleware.Writer(srv))))
 }
