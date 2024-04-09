@@ -18,4 +18,12 @@ source .env
 
 docker run --network host migrator -path=/migrations/ -database "$POSTGRES_URL" up
 
+> How to add a user
+
+Everything is done in migrator/query/index.js
+
+You can add your own user, an admin is created by default.
+
+run : `node migrator/query/index.js`
+
 **ALL CREDIENTIALS ARE IN .env**
