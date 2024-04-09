@@ -17,13 +17,21 @@ func AddToContext(ctx context.Context, name, value string, expires time.Time) er
 		return errors.New("could not get response writer")
 	}
 
+	var sameSiteMode http.SameSite
+
+	if os.Getenv("ENV") == "production" {
+		sameSiteMode = http.SameSiteNoneMode
+	} else {
+		sameSiteMode = http.SameSiteLaxMode
+	}
+
 	http.SetCookie(w, &http.Cookie{
 		Name:     name,
 		Value:    value,
 		Expires:  expires,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: sameSiteMode,
 		HttpOnly: true,
-		Secure:   os.Getenv("PRODUCTION") == "true",
+		Secure:   os.Getenv("ENV") == "production",
 	})
 	return nil
 }

@@ -72,7 +72,7 @@ func createGraphQLServer(db *pg.DB) http.Handler {
 
 func setupHTTPHandlers(srv http.Handler) {
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:8080"},
+		AllowedOrigins:   []string{"http://localhost:8080", "http://localhost:3001"},
 		AllowCredentials: true,
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 	})
