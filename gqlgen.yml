@@ -88,3 +88,6 @@ models:
   User:
     model:
       - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.User
+  UserInfo:
+    model:
+      - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.UserInfo
