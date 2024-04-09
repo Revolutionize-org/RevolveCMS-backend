@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"os"
+	"time"
 
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/cookie"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/hashing"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/jwt"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
-	"github.com/Revolutionize-org/RevolveCMS-backend/internal/request"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/validation"
 )
 
@@ -46,9 +47,8 @@ func (r *mutationResolver) Login(ctx context.Context, userInfo model.UserInfo) (
 		return nil, err
 	}
 
-	if err = request.AddCookieToContext(ctx, "refresh_token", refreshToken); err != nil {
+	if err = cookie.AddToContext(ctx, "refresh_token", refreshToken, time.Now().Add(time.Hour*24*90)); err != nil {
 		return nil, err
-
 	}
 
 	return &model.AuthToken{
@@ -57,8 +57,13 @@ func (r *mutationResolver) Login(ctx context.Context, userInfo model.UserInfo) (
 	}, nil
 }
 
-func (r *mutationResolver) Logout(ctx context.Context, refreshToken string) (bool, error) {
-	claims, err := jwt.Parse(refreshToken, os.Getenv("REFRESH_TOKEN_SECRET"))
+func (r *mutationResolver) Logout(ctx context.Context) (bool, error) {
+	token, err := cookie.GetFromContext(ctx, "refresh_token")
+	if err != nil {
+		return false, nil
+	}
+
+	claims, err := jwt.Parse(token, os.Getenv("REFRESH_TOKEN_SECRET"))
 	if err != nil {
 		return false, err
 	}
@@ -73,7 +78,7 @@ func (r *mutationResolver) Logout(ctx context.Context, refreshToken string) (boo
 		return false, err
 	}
 
-	if err := hashing.CompareHashAndSecret(hashedToken.Token, refreshToken); err != nil {
+	if err := hashing.CompareHashAndSecret(hashedToken.Token, token); err != nil {
 		return false, errors.New("invalid token")
 	}
 
@@ -84,6 +89,10 @@ func (r *mutationResolver) Logout(ctx context.Context, refreshToken string) (boo
 
 	if !deleted {
 		return false, errors.New("could not delete token")
+	}
+
+	if err := cookie.DeleteFromContext(ctx, "refresh_token"); err != nil {
+		return false, nil
 	}
 	return true, nil
 }
