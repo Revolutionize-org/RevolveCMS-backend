@@ -3,6 +3,7 @@ package resolver
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -20,6 +21,11 @@ type mutationResolver struct{ *Resolver }
 func (r *Resolver) Mutation() gql.MutationResolver { return &mutationResolver{r} }
 
 func (r *mutationResolver) Login(ctx context.Context, userInfo model.UserInfo) (*model.AuthToken, error) {
+	_, err := cookie.GetFromContext(ctx, "refresh_token")
+	if err == nil {
+		return nil, errors.New("already logged in")
+	}
+
 	if err := validation.ValidateInput[model.UserInfo](ctx, userInfo); err != nil {
 		return nil, err
 	}
@@ -33,12 +39,12 @@ func (r *mutationResolver) Login(ctx context.Context, userInfo model.UserInfo) (
 		return nil, errors.New("invalid email or password")
 	}
 
-	accessToken, err := jwt.New(user, os.Getenv("ACCESS_TOKEN_SECRET"))
+	accessToken, err := jwt.New(user.ID, os.Getenv("ACCESS_TOKEN_SECRET"))
 	if err != nil {
 		return nil, err
 	}
 
-	uuid, refreshToken, err := jwt.CreateRefreshToken()
+	uuid, refreshToken, err := jwt.CreateRefreshToken(user.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -63,9 +69,14 @@ func (r *mutationResolver) Logout(ctx context.Context) (bool, error) {
 		return false, nil
 	}
 
-	id, err := jwt.Validate(token, r.TokenRepo)
+	claims, err := jwt.Validate(token, r.TokenRepo)
 	if err != nil {
 		return false, err
+	}
+
+	id, ok := claims["id"].(string)
+	if !ok {
+		return false, errors.New("invalid token")
 	}
 
 	deleted, err := r.TokenRepo.Delete(id)
@@ -89,16 +100,21 @@ func (r *mutationResolver) RefreshToken(ctx context.Context) (string, error) {
 		return "", err
 	}
 
-	_, err = jwt.Validate(token, r.TokenRepo)
+	claims, err := jwt.Validate(token, r.TokenRepo)
 	if err != nil {
 		return "", err
 	}
 
-	// accessToken, err := jwt.New(id, os.Getenv("ACCESS_TOKEN_SECRET"))
-	// if err != nil {
-	// 	return "", nil
-	// }
+	userId, ok := claims["userID"].(string)
+	if !ok {
+		return "", errors.New("invalid token")
+	}
+	fmt.Printf("ID %s\n", userId)
 
-	// return accessToken, nil
-	return "", nil
+	accessToken, err := jwt.New(userId, os.Getenv("ACCESS_TOKEN_SECRET"))
+	if err != nil {
+		return "", err
+	}
+
+	return accessToken, nil
 }

@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/hashing"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
 	"github.com/golang-jwt/jwt/v5"
@@ -14,31 +13,37 @@ import (
 )
 
 type RefreshTokenPayload struct {
-	UserID uuid.UUID
+	ID     uuid.UUID
+	UserID string
 }
 
-func New(data any, secret string) (string, error) {
-	var token *jwt.Token
+func generateTokenWithClaims(claims jwt.Claims, secret string) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(secret))
+}
 
+func New(data interface{}, secret string) (string, error) {
 	switch v := data.(type) {
-	case *model.User:
-		token = jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 1)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			Subject:   v.ID,
-			Issuer:    "revolvecms",
-		})
-	case uuid.UUID:
-		token = jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 1)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			Subject:   v.String(),
-			Issuer:    "revolvecms",
-		})
+	case string:
+		claims := jwt.MapClaims{
+			"id":  v,
+			"exp": jwt.NewNumericDate(time.Now().Add(time.Hour * 1)),
+			"iat": jwt.NewNumericDate(time.Now()),
+			"iss": "revolvecms",
+		}
+		return generateTokenWithClaims(claims, secret)
+	case RefreshTokenPayload:
+		claims := jwt.MapClaims{
+			"id":     v.ID,
+			"userID": v.UserID,
+			"exp":    jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 90)),
+			"iat":    jwt.NewNumericDate(time.Now()),
+			"iss":    "revolvecms",
+		}
+		return generateTokenWithClaims(claims, secret)
 	default:
 		return "", errors.New("invalid data type")
 	}
-	return token.SignedString([]byte(secret))
 }
 
 func Parse(t, secret string) (jwt.MapClaims, error) {
@@ -63,35 +68,39 @@ func Parse(t, secret string) (jwt.MapClaims, error) {
 	return nil, errors.New("invalid token")
 }
 
-func CreateRefreshToken() (string, string, error) {
+func CreateRefreshToken(userID string) (string, string, error) {
 	uuid, err := uuid.NewRandom()
 	if err != nil {
 		return "", "", err
 	}
 
-	refreshToken, err := New(uuid, os.Getenv("REFRESH_TOKEN_SECRET"))
+	payload := RefreshTokenPayload{
+		ID:     uuid,
+		UserID: userID,
+	}
+	refreshToken, err := New(payload, os.Getenv("REFRESH_TOKEN_SECRET"))
 	return uuid.String(), refreshToken, err
 }
 
-func Validate(token string, tokenRepo *postgres.TokenRepo) (string, error) {
+func Validate(token string, tokenRepo *postgres.TokenRepo) (jwt.MapClaims, error) {
 	claims, err := Parse(token, os.Getenv("REFRESH_TOKEN_SECRET"))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	tokenId, err := claims.GetSubject()
-	if err != nil {
-		return "", err
+	tokenId, ok := claims["id"].(string)
+	if !ok {
+		return nil, errors.New("invalid token")
 	}
 
 	hashedToken, err := tokenRepo.Get(tokenId)
 	if err := postgres.CheckErrNoRows(err, "invalid token"); err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if err := hashing.CompareHashAndSecret(hashedToken.Token, token); err != nil {
-		return "", errors.New("invalid token")
+		return nil, errors.New("invalid token")
 	}
 
-	return tokenId, nil
+	return claims, nil
 }
