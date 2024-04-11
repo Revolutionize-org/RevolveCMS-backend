@@ -35,6 +35,20 @@ func NewAccessToken(userID string) (string, error) {
 	return token, err
 }
 
+func CreateRefreshToken(userID string) (string, string, error) {
+	uuid, err := uuid.NewRandom()
+	if err != nil {
+		return "", "", err
+	}
+
+	payload := RefreshTokenPayload{
+		ID:     uuid,
+		UserID: userID,
+	}
+	refreshToken, err := NewRefreshToken(payload)
+	return uuid.String(), refreshToken, err
+}
+
 func NewRefreshToken(payload RefreshTokenPayload) (string, error) {
 	now := time.Now()
 	claims := jwt.MapClaims{
@@ -49,7 +63,7 @@ func NewRefreshToken(payload RefreshTokenPayload) (string, error) {
 	return token, err
 }
 
-func Parse(t, secret string) (jwt.MapClaims, error) {
+func parse(t, secret string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(t, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -71,22 +85,8 @@ func Parse(t, secret string) (jwt.MapClaims, error) {
 	return nil, errors.New("invalid token")
 }
 
-func CreateRefreshToken(userID string) (string, string, error) {
-	uuid, err := uuid.NewRandom()
-	if err != nil {
-		return "", "", err
-	}
-
-	payload := RefreshTokenPayload{
-		ID:     uuid,
-		UserID: userID,
-	}
-	refreshToken, err := NewRefreshToken(payload)
-	return uuid.String(), refreshToken, err
-}
-
 func Validate(token string, tokenRepo *postgres.TokenRepo) (jwt.MapClaims, error) {
-	claims, err := Parse(token, os.Getenv("REFRESH_TOKEN_SECRET"))
+	claims, err := parse(token, os.Getenv("REFRESH_TOKEN_SECRET"))
 	if err != nil {
 		return nil, err
 	}

@@ -13,6 +13,7 @@ import (
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/resolver"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/middleware"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/service/auth"
 	"github.com/go-pg/pg/v10"
 	"github.com/joho/godotenv"
 )
@@ -60,11 +61,12 @@ func connectToDB() *pg.DB {
 }
 
 func createGraphQLServer(db *pg.DB) http.Handler {
+	authService := auth.New(&postgres.UserRepo{DB: db}, &postgres.TokenRepo{DB: db})
+
 	return middleware.Writer(handler.NewDefaultServer(gql.NewExecutableSchema(
 		gql.Config{
 			Resolvers: &resolver.Resolver{
-				UserRepo:  &postgres.UserRepo{DB: db},
-				TokenRepo: &postgres.TokenRepo{DB: db},
+				AuthService: authService,
 			},
 		},
 	)))
