@@ -22,28 +22,31 @@ func generateTokenWithClaims(claims jwt.Claims, secret string) (string, error) {
 	return token.SignedString([]byte(secret))
 }
 
-func New(data interface{}, secret string) (string, error) {
-	switch v := data.(type) {
-	case string:
-		claims := jwt.MapClaims{
-			"id":  v,
-			"exp": jwt.NewNumericDate(time.Now().Add(time.Hour * 1)),
-			"iat": jwt.NewNumericDate(time.Now()),
-			"iss": "revolvecms",
-		}
-		return generateTokenWithClaims(claims, secret)
-	case RefreshTokenPayload:
-		claims := jwt.MapClaims{
-			"id":     v.ID,
-			"userID": v.UserID,
-			"exp":    jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 90)),
-			"iat":    jwt.NewNumericDate(time.Now()),
-			"iss":    "revolvecms",
-		}
-		return generateTokenWithClaims(claims, secret)
-	default:
-		return "", errors.New("invalid data type")
+func NewAccessToken(userID string) (string, error) {
+	now := time.Now()
+	claims := jwt.MapClaims{
+		"id":  userID,
+		"exp": jwt.NewNumericDate(now.Add(time.Hour * 1)),
+		"iat": jwt.NewNumericDate(now),
+		"iss": "revolvecms",
 	}
+
+	token, err := generateTokenWithClaims(claims, os.Getenv("ACCESS_TOKEN_SECRET"))
+	return token, err
+}
+
+func NewRefreshToken(payload RefreshTokenPayload) (string, error) {
+	now := time.Now()
+	claims := jwt.MapClaims{
+		"id":     payload.ID,
+		"userID": payload.UserID,
+		"exp":    jwt.NewNumericDate(now.Add(time.Hour * 24 * 90)),
+		"iat":    jwt.NewNumericDate(now),
+		"iss":    "revolvecms",
+	}
+
+	token, err := generateTokenWithClaims(claims, os.Getenv("REFRESH_TOKEN_SECRET"))
+	return token, err
 }
 
 func Parse(t, secret string) (jwt.MapClaims, error) {
@@ -78,7 +81,7 @@ func CreateRefreshToken(userID string) (string, string, error) {
 		ID:     uuid,
 		UserID: userID,
 	}
-	refreshToken, err := New(payload, os.Getenv("REFRESH_TOKEN_SECRET"))
+	refreshToken, err := NewRefreshToken(payload)
 	return uuid.String(), refreshToken, err
 }
 
