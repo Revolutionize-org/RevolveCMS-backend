@@ -1,1 +1,0 @@
-CREATE INDEX idx_role_id ON users(role_id);

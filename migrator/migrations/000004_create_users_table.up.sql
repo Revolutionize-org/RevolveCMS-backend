@@ -5,6 +5,8 @@ CREATE TABLE users(
     password_hash TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     role_id UUID NOT NULL,
+    website_id UUID NOT NULL,
     
-    CONSTRAINT fk_role_id FOREIGN KEY (role_id) REFERENCES role(id)
+    CONSTRAINT fk_role_id FOREIGN KEY (role_id) REFERENCES role(id),
+    CONSTRAINT fk_website_id FOREIGN KEY (website_id) REFERENCES website(id)
 );

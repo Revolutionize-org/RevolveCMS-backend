@@ -1,1 +1,0 @@
-DROP INDEX idx_page_id ON website(page_id)

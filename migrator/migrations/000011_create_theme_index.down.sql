@@ -1,1 +1,0 @@
-DROP INDEX idx_theme_id ON website(theme_id);
