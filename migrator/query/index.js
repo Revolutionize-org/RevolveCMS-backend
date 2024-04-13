@@ -25,7 +25,8 @@ createUser(
   'admin',
   'admin@proton.me',
   'adminPassword',
-  'd7de28aa-5028-4bee-8361-7d630d86da54'
+  'd7de28aa-5028-4bee-8361-7d630d86da54',
+  '45955517-30ee-4310-b253-d0cd677cc92e'
 );
 
 function createClient() {
@@ -39,16 +40,23 @@ function createClient() {
   });
 }
 
-async function createUser(client, name, email, password, role_id) {
+async function createUser(client, name, email, password, role_id, website_id) {
   const uuid = uuidv4();
   const password_hash = await argon2.hash(password);
 
   const query = `INSERT INTO 
-  users(id, name, email, password_hash, role_id) 
-  VALUES($1, $2, $3, $4, $5)`;
+  users(id, name, email, password_hash, role_id, website_id) 
+  VALUES($1, $2, $3, $4, $5, $6)`;
 
   try {
-    await client.query(query, [uuid, name, email, password_hash, role_id]);
+    await client.query(query, [
+      uuid,
+      name,
+      email,
+      password_hash,
+      role_id,
+      website_id,
+    ]);
     console.log('User created successfully!');
   } catch (error) {
     console.error('Error creating user:', error);
