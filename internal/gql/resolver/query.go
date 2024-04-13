@@ -6,10 +6,31 @@ import (
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
+	"github.com/google/uuid"
 )
 
-func (r *queryResolver) Me(ctx context.Context, id string) (*model.User, error) {
+func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	panic(fmt.Errorf("not implemented: Me - me"))
+}
+
+// Website is the resolver for the website field.
+func (r *queryResolver) Website(ctx context.Context) (*model.Website, error) {
+	panic(fmt.Errorf("not implemented: Website - website"))
+}
+
+// Header is the resolver for the header field.
+func (r *queryResolver) Header(ctx context.Context, websiteID uuid.UUID) (*model.Header, error) {
+	panic(fmt.Errorf("not implemented: Header - header"))
+}
+
+// Page is the resolver for the page field.
+func (r *queryResolver) Page(ctx context.Context, websiteID uuid.UUID) ([]*model.Page, error) {
+	panic(fmt.Errorf("not implemented: Page - page"))
+}
+
+// Footer is the resolver for the footer field.
+func (r *queryResolver) Footer(ctx context.Context, websiteID uuid.UUID) (*model.Footer, error) {
+	panic(fmt.Errorf("not implemented: Footer - footer"))
 }
 
 // Mutation returns gql.MutationResolver implementation.

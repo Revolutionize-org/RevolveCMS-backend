@@ -91,3 +91,16 @@ models:
   UserInfo:
     model:
       - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.UserInfo
+  UUID:
+    model:
+      - github.com/99designs/gqlgen/graphql.UUID
+  Website:
+    fields:
+      theme:
+        resolver: true
+      header:
+        resolver: true
+      pages:
+        resolver: true
+      footer:
+        resolver: true

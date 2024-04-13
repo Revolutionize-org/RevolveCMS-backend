@@ -7,8 +7,10 @@ package gql
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
+	"github.com/google/uuid"
 )
 
 // Login is the resolver for the login field.
@@ -26,9 +28,119 @@ func (r *mutationResolver) RefreshToken(ctx context.Context) (string, error) {
 	panic(fmt.Errorf("not implemented: RefreshToken - refreshToken"))
 }
 
+// CreateHeader is the resolver for the createHeader field.
+func (r *mutationResolver) CreateHeader(ctx context.Context, header model.HeaderInput) (*model.Header, error) {
+	panic(fmt.Errorf("not implemented: CreateHeader - createHeader"))
+}
+
+// DeleteHeader is the resolver for the deleteHeader field.
+func (r *mutationResolver) DeleteHeader(ctx context.Context, id uuid.UUID) (bool, error) {
+	panic(fmt.Errorf("not implemented: DeleteHeader - deleteHeader"))
+}
+
+// ModifyHeader is the resolver for the modifyHeader field.
+func (r *mutationResolver) ModifyHeader(ctx context.Context, header model.HeaderInput) (*model.Header, error) {
+	panic(fmt.Errorf("not implemented: ModifyHeader - modifyHeader"))
+}
+
+// CreatePage is the resolver for the createPage field.
+func (r *mutationResolver) CreatePage(ctx context.Context, page model.PageInput) (*model.Page, error) {
+	panic(fmt.Errorf("not implemented: CreatePage - createPage"))
+}
+
+// DeletePage is the resolver for the deletePage field.
+func (r *mutationResolver) DeletePage(ctx context.Context, id uuid.UUID) (bool, error) {
+	panic(fmt.Errorf("not implemented: DeletePage - deletePage"))
+}
+
+// ModifyPage is the resolver for the modifyPage field.
+func (r *mutationResolver) ModifyPage(ctx context.Context, page model.PageInput) (*model.Page, error) {
+	panic(fmt.Errorf("not implemented: ModifyPage - modifyPage"))
+}
+
+// CreateFooter is the resolver for the createFooter field.
+func (r *mutationResolver) CreateFooter(ctx context.Context, footer model.FooterInput) (*model.Footer, error) {
+	panic(fmt.Errorf("not implemented: CreateFooter - createFooter"))
+}
+
+// DeleteFooter is the resolver for the deleteFooter field.
+func (r *mutationResolver) DeleteFooter(ctx context.Context, id uuid.UUID) (bool, error) {
+	panic(fmt.Errorf("not implemented: DeleteFooter - deleteFooter"))
+}
+
+// ModifyFooter is the resolver for the modifyFooter field.
+func (r *mutationResolver) ModifyFooter(ctx context.Context, footer model.FooterInput) (*model.Footer, error) {
+	panic(fmt.Errorf("not implemented: ModifyFooter - modifyFooter"))
+}
+
+// ModifyWebsiteTheme is the resolver for the modifyWebsiteTheme field.
+func (r *mutationResolver) ModifyWebsiteTheme(ctx context.Context, id uuid.UUID, themeID uuid.UUID) (*model.Website, error) {
+	panic(fmt.Errorf("not implemented: ModifyWebsiteTheme - modifyWebsiteTheme"))
+}
+
 // Me is the resolver for the me field.
-func (r *queryResolver) Me(ctx context.Context, id string) (*model.User, error) {
+func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	panic(fmt.Errorf("not implemented: Me - me"))
+}
+
+// Website is the resolver for the website field.
+func (r *queryResolver) Website(ctx context.Context) (*model.Website, error) {
+	panic(fmt.Errorf("not implemented: Website - website"))
+}
+
+// Header is the resolver for the header field.
+func (r *queryResolver) Header(ctx context.Context, websiteID uuid.UUID) (*model.Header, error) {
+	panic(fmt.Errorf("not implemented: Header - header"))
+}
+
+// Page is the resolver for the page field.
+func (r *queryResolver) Page(ctx context.Context, websiteID uuid.UUID) ([]*model.Page, error) {
+	panic(fmt.Errorf("not implemented: Page - page"))
+}
+
+// Footer is the resolver for the footer field.
+func (r *queryResolver) Footer(ctx context.Context, websiteID uuid.UUID) (*model.Footer, error) {
+	panic(fmt.Errorf("not implemented: Footer - footer"))
+}
+
+// ID is the resolver for the id field.
+func (r *userResolver) ID(ctx context.Context, obj *model.User) (uuid.UUID, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// CreatedAt is the resolver for the created_at field.
+func (r *userResolver) CreatedAt(ctx context.Context, obj *model.User) (*time.Time, error) {
+	panic(fmt.Errorf("not implemented: CreatedAt - created_at"))
+}
+
+// Role is the resolver for the role field.
+func (r *userResolver) Role(ctx context.Context, obj *model.User) (*model.Role, error) {
+	panic(fmt.Errorf("not implemented: Role - role"))
+}
+
+// Website is the resolver for the website field.
+func (r *userResolver) Website(ctx context.Context, obj *model.User) (*model.Website, error) {
+	panic(fmt.Errorf("not implemented: Website - website"))
+}
+
+// Theme is the resolver for the theme field.
+func (r *websiteResolver) Theme(ctx context.Context, obj *model.Website) (*model.Theme, error) {
+	panic(fmt.Errorf("not implemented: Theme - theme"))
+}
+
+// Header is the resolver for the header field.
+func (r *websiteResolver) Header(ctx context.Context, obj *model.Website) (*model.Header, error) {
+	panic(fmt.Errorf("not implemented: Header - header"))
+}
+
+// Pages is the resolver for the pages field.
+func (r *websiteResolver) Pages(ctx context.Context, obj *model.Website) ([]*model.Page, error) {
+	panic(fmt.Errorf("not implemented: Pages - pages"))
+}
+
+// Footer is the resolver for the footer field.
+func (r *websiteResolver) Footer(ctx context.Context, obj *model.Website) (*model.Footer, error) {
+	panic(fmt.Errorf("not implemented: Footer - footer"))
 }
 
 // Mutation returns MutationResolver implementation.
@@ -37,5 +149,13 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// User returns UserResolver implementation.
+func (r *Resolver) User() UserResolver { return &userResolver{r} }
+
+// Website returns WebsiteResolver implementation.
+func (r *Resolver) Website() WebsiteResolver { return &websiteResolver{r} }
+
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type userResolver struct{ *Resolver }
+type websiteResolver struct{ *Resolver }

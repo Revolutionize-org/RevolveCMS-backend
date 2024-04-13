@@ -2,13 +2,82 @@
 
 package model
 
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
 type AuthToken struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
 }
 
+type Footer struct {
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Data      string    `json:"data"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type FooterInput struct {
+	ID   *uuid.UUID `json:"id,omitempty"`
+	Name string     `json:"name"`
+	Data string     `json:"data"`
+}
+
+type Header struct {
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Data      string    `json:"data"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type HeaderInput struct {
+	ID   *uuid.UUID `json:"id,omitempty"`
+	Name string     `json:"name"`
+	Data string     `json:"data"`
+}
+
 type Mutation struct {
 }
 
+type Page struct {
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Slug      string    `json:"slug"`
+	Data      string    `json:"data"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type PageInput struct {
+	ID   *uuid.UUID `json:"id,omitempty"`
+	Name string     `json:"name"`
+	Slug string     `json:"slug"`
+	Data string     `json:"data"`
+}
+
 type Query struct {
+}
+
+type Role struct {
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
+}
+
+type Theme struct {
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
+}
+
+type Website struct {
+	ID     uuid.UUID `json:"id"`
+	Name   string    `json:"name"`
+	Theme  *Theme    `json:"theme"`
+	Header *Header   `json:"header,omitempty"`
+	Pages  []*Page   `json:"pages"`
+	Footer *Footer   `json:"footer,omitempty"`
 }
