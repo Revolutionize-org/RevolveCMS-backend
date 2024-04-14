@@ -16,6 +16,9 @@ func (a *auth) RefreshToken(ctx context.Context) (string, error) {
 
 	claims, err := jwt.Validate(token, a.tokenRepo)
 	if err != nil {
+		if err := cookie.DeleteFromContext(ctx, "refresh_token"); err != nil {
+			return "", err
+		}
 		return "", err
 	}
 

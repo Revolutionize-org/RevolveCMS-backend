@@ -101,6 +101,10 @@ func Validate(token string, tokenRepo *postgres.TokenRepo) (jwt.MapClaims, error
 		return nil, err
 	}
 
+	if hashedToken.ExpiresAt.Before(time.Now()) {
+		return nil, errors.New("invalid token")
+	}
+
 	if err := hashing.CompareHashAndSecret(hashedToken.Token, token); err != nil {
 		return nil, errors.New("invalid token")
 	}

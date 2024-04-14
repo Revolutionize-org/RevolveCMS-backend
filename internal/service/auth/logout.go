@@ -34,7 +34,7 @@ func (a *auth) Logout(ctx context.Context) (bool, error) {
 	}
 
 	if err := cookie.DeleteFromContext(ctx, "refresh_token"); err != nil {
-		return false, nil
+		return false, err
 	}
 	return true, nil
 }
