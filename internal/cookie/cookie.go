@@ -3,7 +3,6 @@ package cookie
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -61,8 +60,6 @@ func GetFromContext(ctx context.Context, name string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	fmt.Print(cookie.Value)
 
 	return cookie.Value, nil
 }
