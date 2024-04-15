@@ -9,7 +9,6 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
-	github.com/matthewhartstonge/argon2 v0.1.2
 	github.com/rs/cors v1.10.1
 	github.com/vektah/gqlparser/v2 v2.5.11
 )
