@@ -55,6 +55,8 @@ github.com/lhecker/argon2 v2.0.0+incompatible h1:7tn8CWKMZwbgHAo4pGLAp2upI0nk7Ib
 github.com/lhecker/argon2 v2.0.0+incompatible/go.mod h1:uFO97EyrdDBAPHIyC4ZNX3BygjZ2tAY5QfQHcogIGRE=
 github.com/matthewhartstonge/argon2 v0.1.2 h1:RXdspjdGIH/Rj9zgN+l0MA03f0gKrbplHoqoypr4fkg=
 github.com/matthewhartstonge/argon2 v0.1.2/go.mod h1:PZ+4lWBQHMHgARFPUQ0zxCrYI/o4H7es40QzOSs8/+8=
+github.com/matthewhartstonge/argon2 v1.0.0 h1:e65fkae6O8Na6YTy2HAccUbXR+GQHOnpQxeWGqWCRIw=
+github.com/matthewhartstonge/argon2 v1.0.0/go.mod h1:Fm4FHZxdxCM6hg21Jkz3YZVKnU7VnTlqDQ3ghS/Myok=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e h1:fD57ERR4JtEqsWbfPhv4DMiApHyliiK5xCTNVSPiaAs=
