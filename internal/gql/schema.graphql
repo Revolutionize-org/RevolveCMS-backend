@@ -1,46 +1,43 @@
-scalar Time
-scalar UUID
-
 input UserInfo {
   email: String!
   password: String!
 }
 
 input HeaderInput {
-  id: UUID
+  id: String
   name: String!
   data: String!
 }
 
 input PageInput {
-  id: UUID
+  id: String
   name: String!
   slug: String!
   data: String!
 }
 
 input FooterInput {
-  id: UUID
+  id: String
   name: String!
   data: String!
 }
 
 type Role {
-  id: UUID!
+  id: String!
   name: String!
 }
 
 type User {
-  id: UUID!
+  id: String!
   name: String!
   email: String!
-  created_at: Time!
+  created_at: String!
   role: Role!
   website: Website!
 }
 
 type Website {
-  id: UUID!
+  id: String!
   name: String!
   theme: Theme!
   header: Header
@@ -49,33 +46,33 @@ type Website {
 }
 
 type Theme {
-  id: UUID!
+  id: String!
   name: String!
 }
 
 type Header {
-  id: UUID!
+  id: String!
   name: String!
   data: String!
-  created_at: Time!
-  updated_at: Time!
+  created_at: String!
+  updated_at: String!
 }
 
 type Page {
-  id: UUID!
+  id: String!
   name: String!
   slug: String!
   data: String!
-  created_at: Time!
-  updated_at: Time!
+  created_at: String!
+  updated_at: String!
 }
 
 type Footer {
-  id: UUID!
+  id: String!
   name: String!
   data: String!
-  created_at: Time!
-  updated_at: Time!
+  created_at: String!
+  updated_at: String!
 }
 
 type AuthToken {
@@ -87,9 +84,9 @@ type Query {
   # Get UserID in backend by parsing access token in header["Authorization"]
   me: User!
   website: Website!
-  header(websiteID: UUID!): Header
-  page(websiteID: UUID!): [Page]!
-  footer(websiteID: UUID!): Footer
+  header(websiteID: String!): Header
+  page(websiteID: String!): [Page]!
+  footer(websiteID: String!): Footer
 }
 
 type Mutation {
@@ -98,16 +95,16 @@ type Mutation {
   refreshToken: String!
 
   createHeader(header: HeaderInput!): Header!
-  deleteHeader(id: UUID!): Boolean!
+  deleteHeader(id: String!): Boolean!
   modifyHeader(header: HeaderInput!): Header!
 
   createPage(page: PageInput!): Page!
-  deletePage(id: UUID!): Boolean!
+  deletePage(id: String!): Boolean!
   modifyPage(page: PageInput!): Page!
 
   createFooter(footer: FooterInput!): Footer!
-  deleteFooter(id: UUID!): Boolean!
+  deleteFooter(id: String!): Boolean!
   modifyFooter(footer: FooterInput!): Footer!
 
-  modifyWebsiteTheme(id: UUID!, themeID: UUID!): Website!
+  modifyWebsiteTheme(id: String!, themeID: String!): Website!
 }

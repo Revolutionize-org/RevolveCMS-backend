@@ -34,7 +34,7 @@ func (r *mutationResolver) CreateHeader(ctx context.Context, header model.Header
 }
 
 // DeleteHeader is the resolver for the deleteHeader field.
-func (r *mutationResolver) DeleteHeader(ctx context.Context, id uuid.UUID) (bool, error) {
+func (r *mutationResolver) DeleteHeader(ctx context.Context, id string) (bool, error) {
 	panic(fmt.Errorf("not implemented: DeleteHeader - deleteHeader"))
 }
 
@@ -49,7 +49,7 @@ func (r *mutationResolver) CreatePage(ctx context.Context, page model.PageInput)
 }
 
 // DeletePage is the resolver for the deletePage field.
-func (r *mutationResolver) DeletePage(ctx context.Context, id uuid.UUID) (bool, error) {
+func (r *mutationResolver) DeletePage(ctx context.Context, id string) (bool, error) {
 	panic(fmt.Errorf("not implemented: DeletePage - deletePage"))
 }
 
@@ -64,7 +64,7 @@ func (r *mutationResolver) CreateFooter(ctx context.Context, footer model.Footer
 }
 
 // DeleteFooter is the resolver for the deleteFooter field.
-func (r *mutationResolver) DeleteFooter(ctx context.Context, id uuid.UUID) (bool, error) {
+func (r *mutationResolver) DeleteFooter(ctx context.Context, id string) (bool, error) {
 	panic(fmt.Errorf("not implemented: DeleteFooter - deleteFooter"))
 }
 
@@ -74,7 +74,7 @@ func (r *mutationResolver) ModifyFooter(ctx context.Context, footer model.Footer
 }
 
 // ModifyWebsiteTheme is the resolver for the modifyWebsiteTheme field.
-func (r *mutationResolver) ModifyWebsiteTheme(ctx context.Context, id uuid.UUID, themeID uuid.UUID) (*model.Website, error) {
+func (r *mutationResolver) ModifyWebsiteTheme(ctx context.Context, id string, themeID string) (*model.Website, error) {
 	panic(fmt.Errorf("not implemented: ModifyWebsiteTheme - modifyWebsiteTheme"))
 }
 
@@ -89,28 +89,18 @@ func (r *queryResolver) Website(ctx context.Context) (*model.Website, error) {
 }
 
 // Header is the resolver for the header field.
-func (r *queryResolver) Header(ctx context.Context, websiteID uuid.UUID) (*model.Header, error) {
+func (r *queryResolver) Header(ctx context.Context, websiteID string) (*model.Header, error) {
 	panic(fmt.Errorf("not implemented: Header - header"))
 }
 
 // Page is the resolver for the page field.
-func (r *queryResolver) Page(ctx context.Context, websiteID uuid.UUID) ([]*model.Page, error) {
+func (r *queryResolver) Page(ctx context.Context, websiteID string) ([]*model.Page, error) {
 	panic(fmt.Errorf("not implemented: Page - page"))
 }
 
 // Footer is the resolver for the footer field.
-func (r *queryResolver) Footer(ctx context.Context, websiteID uuid.UUID) (*model.Footer, error) {
+func (r *queryResolver) Footer(ctx context.Context, websiteID string) (*model.Footer, error) {
 	panic(fmt.Errorf("not implemented: Footer - footer"))
-}
-
-// ID is the resolver for the id field.
-func (r *userResolver) ID(ctx context.Context, obj *model.User) (uuid.UUID, error) {
-	panic(fmt.Errorf("not implemented: ID - id"))
-}
-
-// CreatedAt is the resolver for the created_at field.
-func (r *userResolver) CreatedAt(ctx context.Context, obj *model.User) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - created_at"))
 }
 
 // Role is the resolver for the role field.
@@ -159,3 +149,16 @@ type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type userResolver struct{ *Resolver }
 type websiteResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *userResolver) CreatedAt(ctx context.Context, obj *model.User) (*time.Time, error) {
+	panic(fmt.Errorf("not implemented: CreatedAt - created_at"))
+}
+func (r *userResolver) ID(ctx context.Context, obj *model.User) (uuid.UUID, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}

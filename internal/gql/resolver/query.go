@@ -6,7 +6,6 @@ import (
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
-	"github.com/google/uuid"
 )
 
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
@@ -19,17 +18,17 @@ func (r *queryResolver) Website(ctx context.Context) (*model.Website, error) {
 }
 
 // Header is the resolver for the header field.
-func (r *queryResolver) Header(ctx context.Context, websiteID uuid.UUID) (*model.Header, error) {
+func (r *queryResolver) Header(ctx context.Context, websiteID string) (*model.Header, error) {
 	panic(fmt.Errorf("not implemented: Header - header"))
 }
 
 // Page is the resolver for the page field.
-func (r *queryResolver) Page(ctx context.Context, websiteID uuid.UUID) ([]*model.Page, error) {
+func (r *queryResolver) Page(ctx context.Context, websiteID string) ([]*model.Page, error) {
 	panic(fmt.Errorf("not implemented: Page - page"))
 }
 
 // Footer is the resolver for the footer field.
-func (r *queryResolver) Footer(ctx context.Context, websiteID uuid.UUID) (*model.Footer, error) {
+func (r *queryResolver) Footer(ctx context.Context, websiteID string) (*model.Footer, error) {
 	panic(fmt.Errorf("not implemented: Footer - footer"))
 }
 

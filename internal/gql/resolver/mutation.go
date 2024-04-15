@@ -9,7 +9,6 @@ import (
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/validation"
-	"github.com/google/uuid"
 )
 
 type mutationResolver struct{ *Resolver }
@@ -37,12 +36,13 @@ func (r *mutationResolver) RefreshToken(ctx context.Context) (string, error) {
 	return r.AuthService.RefreshToken(ctx)
 }
 
+// CreateHeader is the resolver for the createHeader field.
 func (r *mutationResolver) CreateHeader(ctx context.Context, header model.HeaderInput) (*model.Header, error) {
 	panic(fmt.Errorf("not implemented: CreateHeader - createHeader"))
 }
 
 // DeleteHeader is the resolver for the deleteHeader field.
-func (r *mutationResolver) DeleteHeader(ctx context.Context, id uuid.UUID) (bool, error) {
+func (r *mutationResolver) DeleteHeader(ctx context.Context, id string) (bool, error) {
 	panic(fmt.Errorf("not implemented: DeleteHeader - deleteHeader"))
 }
 
@@ -57,7 +57,7 @@ func (r *mutationResolver) CreatePage(ctx context.Context, page model.PageInput)
 }
 
 // DeletePage is the resolver for the deletePage field.
-func (r *mutationResolver) DeletePage(ctx context.Context, id uuid.UUID) (bool, error) {
+func (r *mutationResolver) DeletePage(ctx context.Context, id string) (bool, error) {
 	panic(fmt.Errorf("not implemented: DeletePage - deletePage"))
 }
 
@@ -72,7 +72,7 @@ func (r *mutationResolver) CreateFooter(ctx context.Context, footer model.Footer
 }
 
 // DeleteFooter is the resolver for the deleteFooter field.
-func (r *mutationResolver) DeleteFooter(ctx context.Context, id uuid.UUID) (bool, error) {
+func (r *mutationResolver) DeleteFooter(ctx context.Context, id string) (bool, error) {
 	panic(fmt.Errorf("not implemented: DeleteFooter - deleteFooter"))
 }
 
@@ -82,6 +82,6 @@ func (r *mutationResolver) ModifyFooter(ctx context.Context, footer model.Footer
 }
 
 // ModifyWebsiteTheme is the resolver for the modifyWebsiteTheme field.
-func (r *mutationResolver) ModifyWebsiteTheme(ctx context.Context, id uuid.UUID, themeID uuid.UUID) (*model.Website, error) {
+func (r *mutationResolver) ModifyWebsiteTheme(ctx context.Context, id string, themeID string) (*model.Website, error) {
 	panic(fmt.Errorf("not implemented: ModifyWebsiteTheme - modifyWebsiteTheme"))
 }

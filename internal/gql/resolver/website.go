@@ -12,7 +12,6 @@ type websiteResolver struct{ *Resolver }
 
 func (r *Resolver) Website() gql.WebsiteResolver { return &websiteResolver{r} }
 
-// Theme is the resolver for the theme field.
 func (r *websiteResolver) Theme(ctx context.Context, obj *model.Website) (*model.Theme, error) {
 	panic(fmt.Errorf("not implemented: Theme - theme"))
 }
