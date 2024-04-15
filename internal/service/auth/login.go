@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"errors"
+	"os"
 	"time"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/cookie"
@@ -22,21 +23,24 @@ func (a *auth) Login(ctx context.Context, userInfo model.UserInfo) (*model.AuthT
 		return nil, errors.New("invalid email or password")
 	}
 
-	accessToken, err := jwt.NewAccessToken(user.ID)
+	now := time.Now()
+	_, accessToken, err := jwt.New(user.ID, now.Add(time.Hour*1), os.Getenv("ACCESS_TOKEN_SECRET"))
 	if err != nil {
 		return nil, err
 	}
 
-	uuid, refreshToken, err := jwt.CreateRefreshToken(user.ID)
+	rtExp := time.Now().Add(time.Hour * 24 * 90)
+	uuid, refreshToken, err := jwt.New(user.ID, rtExp, os.Getenv("REFRESH_TOKEN_SECRET"))
 	if err != nil {
 		return nil, err
 	}
 
-	if err := a.tokenRepo.Add(uuid, refreshToken); err != nil {
+	err = a.tokenRepo.Add(uuid, rtExp)
+	if err != nil {
 		return nil, err
 	}
 
-	if err = cookie.AddToContext(ctx, "refresh_token", refreshToken, time.Now().Add(time.Hour*24*90)); err != nil {
+	if err = cookie.AddToContext(ctx, "refresh_token", refreshToken, rtExp); err != nil {
 		return nil, err
 	}
 

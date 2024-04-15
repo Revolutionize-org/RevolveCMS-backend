@@ -9,32 +9,43 @@ import (
 )
 
 func (a *auth) Logout(ctx context.Context) (bool, error) {
-	token, err := cookie.GetFromContext(ctx, "refresh_token")
+	refreshToken, err := cookie.GetFromContext(ctx, "refresh_token")
 	if err != nil {
 		return false, nil
 	}
 
-	claims, err := jwt.Validate(token, a.tokenRepo)
+	claims, err := jwt.Validate(refreshToken, a.tokenRepo)
 	if err != nil {
-		return false, err
+		return a.deleteRefreshToken(ctx, err)
 	}
 
-	id, ok := claims["id"].(string)
+	jti, ok := claims["jti"].(string)
 	if !ok {
-		return false, errors.New("invalid token")
+		return a.deleteRefreshToken(ctx, errors.New("invalid token"))
 	}
 
-	deleted, err := a.tokenRepo.Delete(id)
+	if err := a.deleteTokenByID(jti); err != nil {
+		return a.deleteRefreshToken(ctx, err)
+	}
+
+	return a.deleteRefreshToken(ctx, nil)
+}
+
+func (a *auth) deleteRefreshToken(ctx context.Context, err error) (bool, error) {
+	cookieErr := cookie.DeleteFromContext(ctx, "refresh_token")
+	if cookieErr != nil {
+		return false, cookieErr
+	}
+	return true, err
+}
+
+func (a *auth) deleteTokenByID(jti string) error {
+	deleted, err := a.tokenRepo.Delete(jti)
 	if err != nil {
-		return false, err
+		return err
 	}
-
 	if !deleted {
-		return false, errors.New("could not delete token")
+		return errors.New("could not delete token")
 	}
-
-	if err := cookie.DeleteFromContext(ctx, "refresh_token"); err != nil {
-		return false, err
-	}
-	return true, nil
+	return nil
 }

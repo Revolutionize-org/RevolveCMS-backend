@@ -3,6 +3,8 @@ package auth
 import (
 	"context"
 	"errors"
+	"os"
+	"time"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/cookie"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/jwt"
@@ -22,12 +24,12 @@ func (a *auth) RefreshToken(ctx context.Context) (string, error) {
 		return "", err
 	}
 
-	userId, ok := claims["userID"].(string)
+	subject, ok := claims["sub"].(string)
 	if !ok {
 		return "", errors.New("invalid token")
 	}
 
-	accessToken, err := jwt.NewAccessToken(userId)
+	_, accessToken, err := jwt.New(subject, time.Now().Add(time.Hour*1), os.Getenv("ACCESS_TOKEN_SECRET"))
 	if err != nil {
 		return "", err
 	}
