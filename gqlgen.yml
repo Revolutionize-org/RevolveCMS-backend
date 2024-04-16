@@ -86,6 +86,11 @@ models:
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
   User:
+    fields:
+      role:
+        resolver: true
+      website:
+        resolver: true
     model:
       - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.User
   UserInfo:
