@@ -16,6 +16,10 @@ type TokenRepo struct {
 	DB *pg.DB
 }
 
+func NewTokenRepo(db *pg.DB) *TokenRepo {
+	return &TokenRepo{DB: db}
+}
+
 func (tr *TokenRepo) Get(jti string) (*Token, error) {
 	token := &Token{
 		ID: jti,

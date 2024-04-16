@@ -66,7 +66,7 @@ func createGraphQLServer(db *pg.DB) http.Handler {
 
 	authService := auth.New(
 		userRepo,
-		&repository.TokenRepo{DB: db},
+		repository.NewTokenRepo(db),
 	)
 
 	return middleware.Writer(handler.NewDefaultServer(gql.NewExecutableSchema(
