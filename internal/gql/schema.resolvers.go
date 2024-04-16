@@ -7,10 +7,8 @@ package gql
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
-	"github.com/google/uuid"
 )
 
 // Login is the resolver for the login field.
@@ -89,17 +87,17 @@ func (r *queryResolver) Website(ctx context.Context) (*model.Website, error) {
 }
 
 // Header is the resolver for the header field.
-func (r *queryResolver) Header(ctx context.Context, websiteID string) (*model.Header, error) {
+func (r *queryResolver) Header(ctx context.Context) (*model.Header, error) {
 	panic(fmt.Errorf("not implemented: Header - header"))
 }
 
 // Page is the resolver for the page field.
-func (r *queryResolver) Page(ctx context.Context, websiteID string) ([]*model.Page, error) {
+func (r *queryResolver) Page(ctx context.Context) ([]*model.Page, error) {
 	panic(fmt.Errorf("not implemented: Page - page"))
 }
 
 // Footer is the resolver for the footer field.
-func (r *queryResolver) Footer(ctx context.Context, websiteID string) (*model.Footer, error) {
+func (r *queryResolver) Footer(ctx context.Context) (*model.Footer, error) {
 	panic(fmt.Errorf("not implemented: Footer - footer"))
 }
 
@@ -156,9 +154,3 @@ type websiteResolver struct{ *Resolver }
 //   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
 //     it when you're done.
 //   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *userResolver) CreatedAt(ctx context.Context, obj *model.User) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: CreatedAt - created_at"))
-}
-func (r *userResolver) ID(ctx context.Context, obj *model.User) (uuid.UUID, error) {
-	panic(fmt.Errorf("not implemented: ID - id"))
-}

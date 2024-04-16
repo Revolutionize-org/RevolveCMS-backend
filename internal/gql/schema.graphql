@@ -84,9 +84,9 @@ type Query {
   # Get UserID in backend by parsing access token in header["Authorization"]
   me: User!
   website: Website!
-  header(websiteID: String!): Header
-  page(websiteID: String!): [Page]!
-  footer(websiteID: String!): Footer
+  header: Header
+  page: [Page]!
+  footer: Footer
 }
 
 type Mutation {

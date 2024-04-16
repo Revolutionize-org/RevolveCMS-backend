@@ -96,10 +96,10 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Footer  func(childComplexity int, websiteID string) int
-		Header  func(childComplexity int, websiteID string) int
+		Footer  func(childComplexity int) int
+		Header  func(childComplexity int) int
 		Me      func(childComplexity int) int
-		Page    func(childComplexity int, websiteID string) int
+		Page    func(childComplexity int) int
 		Website func(childComplexity int) int
 	}
 
@@ -150,9 +150,9 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Me(ctx context.Context) (*model.User, error)
 	Website(ctx context.Context) (*model.Website, error)
-	Header(ctx context.Context, websiteID string) (*model.Header, error)
-	Page(ctx context.Context, websiteID string) ([]*model.Page, error)
-	Footer(ctx context.Context, websiteID string) (*model.Footer, error)
+	Header(ctx context.Context) (*model.Header, error)
+	Page(ctx context.Context) ([]*model.Page, error)
+	Footer(ctx context.Context) (*model.Footer, error)
 }
 type UserResolver interface {
 	Role(ctx context.Context, obj *model.User) (*model.Role, error)
@@ -461,24 +461,14 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Query_footer_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.Footer(childComplexity, args["websiteID"].(string)), true
+		return e.complexity.Query.Footer(childComplexity), true
 
 	case "Query.header":
 		if e.complexity.Query.Header == nil {
 			break
 		}
 
-		args, err := ec.field_Query_header_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.Header(childComplexity, args["websiteID"].(string)), true
+		return e.complexity.Query.Header(childComplexity), true
 
 	case "Query.me":
 		if e.complexity.Query.Me == nil {
@@ -492,12 +482,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Query_page_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.Page(childComplexity, args["websiteID"].(string)), true
+		return e.complexity.Query.Page(childComplexity), true
 
 	case "Query.website":
 		if e.complexity.Query.Website == nil {
@@ -932,51 +917,6 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_footer_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["websiteID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("websiteID"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["websiteID"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_header_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["websiteID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("websiteID"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["websiteID"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_page_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["websiteID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("websiteID"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["websiteID"] = arg0
 	return args, nil
 }
 
@@ -2729,7 +2669,7 @@ func (ec *executionContext) _Query_header(ctx context.Context, field graphql.Col
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Header(rctx, fc.Args["websiteID"].(string))
+		return ec.resolvers.Query().Header(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2765,17 +2705,6 @@ func (ec *executionContext) fieldContext_Query_header(ctx context.Context, field
 			return nil, fmt.Errorf("no field named %q was found under type Header", field.Name)
 		},
 	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_header_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
 	return fc, nil
 }
 
@@ -2793,7 +2722,7 @@ func (ec *executionContext) _Query_page(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Page(rctx, fc.Args["websiteID"].(string))
+		return ec.resolvers.Query().Page(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2834,17 +2763,6 @@ func (ec *executionContext) fieldContext_Query_page(ctx context.Context, field g
 			return nil, fmt.Errorf("no field named %q was found under type Page", field.Name)
 		},
 	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_page_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
 	return fc, nil
 }
 
@@ -2862,7 +2780,7 @@ func (ec *executionContext) _Query_footer(ctx context.Context, field graphql.Col
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Footer(rctx, fc.Args["websiteID"].(string))
+		return ec.resolvers.Query().Footer(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2897,17 +2815,6 @@ func (ec *executionContext) fieldContext_Query_footer(ctx context.Context, field
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Footer", field.Name)
 		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_footer_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
 	}
 	return fc, nil
 }
