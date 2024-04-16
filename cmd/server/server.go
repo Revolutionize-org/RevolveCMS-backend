@@ -83,6 +83,9 @@ func setupHTTPHandlers(srv http.Handler) {
 	})
 	http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
 	http.Handle("/graphql", c.Handler(
-		middleware.Request(
-			middleware.Writer(srv))))
+		middleware.Auth(
+			middleware.Request(
+				middleware.Writer(srv))),
+	))
+
 }
