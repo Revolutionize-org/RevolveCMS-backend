@@ -8,6 +8,7 @@ import (
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/middleware"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres/repository"
 )
 
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
@@ -20,13 +21,27 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Print(user)
 
 	return user, nil
 }
 
 func (r *queryResolver) Website(ctx context.Context) (*model.Website, error) {
-	panic(fmt.Errorf("not implemented: Website - website"))
+	// user, err := retrieveUser(ctx, r.UserRepo)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// return r.WebsiteRepo.GetByUserID(user.ID)
+	return nil, nil
+}
+
+func retrieveUser(ctx context.Context, userRepo *repository.UserRepo) (*model.User, error) {
+	userID, ok := ctx.Value(middleware.UserKey{}).(string)
+	if !ok {
+		return nil, errors.New("could not get user from context")
+	}
+
+	return userRepo.GetByID(userID)
 }
 
 func (r *queryResolver) Header(ctx context.Context) (*model.Header, error) {

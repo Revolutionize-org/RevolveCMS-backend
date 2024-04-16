@@ -84,6 +84,7 @@ func setupHTTPHandlers(srv http.Handler) {
 		AllowedOrigins:   []string{"http://localhost:8080", "http://localhost:3001"},
 		AllowCredentials: true,
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 	})
 	http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
 	http.Handle("/graphql", c.Handler(
