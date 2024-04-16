@@ -2,14 +2,27 @@ package resolver
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/middleware"
 )
 
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: Me - me"))
+	userID, ok := ctx.Value(middleware.UserKey{}).(string)
+	if !ok {
+		return nil, errors.New("could not get user from context")
+	}
+
+	user, err := r.UserRepo.GetByID(userID)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Print(user)
+
+	return user, nil
 }
 
 // Website is the resolver for the website field.

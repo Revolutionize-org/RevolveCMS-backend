@@ -2,6 +2,7 @@
 package resolver
 
 import (
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres/repository"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/service/auth"
 )
 
@@ -11,4 +12,5 @@ import (
 
 type Resolver struct {
 	AuthService auth.Service
+	UserRepo    *repository.UserRepo
 }

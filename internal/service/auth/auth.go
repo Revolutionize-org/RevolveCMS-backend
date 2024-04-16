@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
-	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres/repository"
 )
 
 type Service interface {
@@ -14,11 +14,11 @@ type Service interface {
 }
 
 type auth struct {
-	userRepo  *postgres.UserRepo
-	tokenRepo *postgres.TokenRepo
+	userRepo  *repository.UserRepo
+	tokenRepo *repository.TokenRepo
 }
 
-func New(userRepo *postgres.UserRepo, tokenRepo *postgres.TokenRepo) Service {
+func New(userRepo *repository.UserRepo, tokenRepo *repository.TokenRepo) Service {
 	return &auth{
 		userRepo:  userRepo,
 		tokenRepo: tokenRepo,
