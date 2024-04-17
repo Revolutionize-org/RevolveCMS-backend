@@ -99,7 +99,8 @@ type ComplexityRoot struct {
 		Footer  func(childComplexity int) int
 		Header  func(childComplexity int) int
 		Me      func(childComplexity int) int
-		Page    func(childComplexity int) int
+		Pages   func(childComplexity int) int
+		Themes  func(childComplexity int) int
 		Website func(childComplexity int) int
 	}
 
@@ -151,8 +152,9 @@ type QueryResolver interface {
 	Me(ctx context.Context) (*model.User, error)
 	Website(ctx context.Context) (*model.Website, error)
 	Header(ctx context.Context) (*model.Header, error)
-	Page(ctx context.Context) ([]*model.Page, error)
+	Pages(ctx context.Context) ([]*model.Page, error)
 	Footer(ctx context.Context) (*model.Footer, error)
+	Themes(ctx context.Context) ([]*model.Theme, error)
 }
 type UserResolver interface {
 	Role(ctx context.Context, obj *model.User) (*model.Role, error)
@@ -477,12 +479,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Me(childComplexity), true
 
-	case "Query.page":
-		if e.complexity.Query.Page == nil {
+	case "Query.pages":
+		if e.complexity.Query.Pages == nil {
 			break
 		}
 
-		return e.complexity.Query.Page(childComplexity), true
+		return e.complexity.Query.Pages(childComplexity), true
+
+	case "Query.themes":
+		if e.complexity.Query.Themes == nil {
+			break
+		}
+
+		return e.complexity.Query.Themes(childComplexity), true
 
 	case "Query.website":
 		if e.complexity.Query.Website == nil {
@@ -2708,8 +2717,8 @@ func (ec *executionContext) fieldContext_Query_header(ctx context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_page(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_page(ctx, field)
+func (ec *executionContext) _Query_pages(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_pages(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2722,7 +2731,7 @@ func (ec *executionContext) _Query_page(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Page(rctx)
+		return ec.resolvers.Query().Pages(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2739,7 +2748,7 @@ func (ec *executionContext) _Query_page(ctx context.Context, field graphql.Colle
 	return ec.marshalNPage2ᚕᚖgithubᚗcomᚋRevolutionizeᚑorgᚋRevolveCMSᚑbackendᚋinternalᚋgqlᚋmodelᚐPage(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_page(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_pages(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -2814,6 +2823,56 @@ func (ec *executionContext) fieldContext_Query_footer(ctx context.Context, field
 				return ec.fieldContext_Footer_updated_at(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Footer", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_themes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_themes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Themes(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Theme)
+	fc.Result = res
+	return ec.marshalNTheme2ᚕᚖgithubᚗcomᚋRevolutionizeᚑorgᚋRevolveCMSᚑbackendᚋinternalᚋgqlᚋmodelᚐThemeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_themes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Theme_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Theme_name(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Theme", field.Name)
 		},
 	}
 	return fc, nil
@@ -6096,7 +6155,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "page":
+		case "pages":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -6105,7 +6164,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_page(ctx, field)
+				res = ec._Query_pages(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -6128,6 +6187,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_footer(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "themes":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_themes(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
 				return res
 			}
 
@@ -7045,6 +7126,50 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 
 func (ec *executionContext) marshalNTheme2githubᚗcomᚋRevolutionizeᚑorgᚋRevolveCMSᚑbackendᚋinternalᚋgqlᚋmodelᚐTheme(ctx context.Context, sel ast.SelectionSet, v model.Theme) graphql.Marshaler {
 	return ec._Theme(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNTheme2ᚕᚖgithubᚗcomᚋRevolutionizeᚑorgᚋRevolveCMSᚑbackendᚋinternalᚋgqlᚋmodelᚐThemeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Theme) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNTheme2ᚖgithubᚗcomᚋRevolutionizeᚑorgᚋRevolveCMSᚑbackendᚋinternalᚋgqlᚋmodelᚐTheme(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNTheme2ᚖgithubᚗcomᚋRevolutionizeᚑorgᚋRevolveCMSᚑbackendᚋinternalᚋgqlᚋmodelᚐTheme(ctx context.Context, sel ast.SelectionSet, v *model.Theme) graphql.Marshaler {

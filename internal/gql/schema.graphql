@@ -85,8 +85,9 @@ type Query {
   me: User!
   website: Website!
   header: Header
-  page: [Page]!
+  pages: [Page]!
   footer: Footer
+  themes: [Theme!]!
 }
 
 type Mutation {

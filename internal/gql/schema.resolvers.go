@@ -91,14 +91,19 @@ func (r *queryResolver) Header(ctx context.Context) (*model.Header, error) {
 	panic(fmt.Errorf("not implemented: Header - header"))
 }
 
-// Page is the resolver for the page field.
-func (r *queryResolver) Page(ctx context.Context) ([]*model.Page, error) {
-	panic(fmt.Errorf("not implemented: Page - page"))
+// Pages is the resolver for the pages field.
+func (r *queryResolver) Pages(ctx context.Context) ([]*model.Page, error) {
+	panic(fmt.Errorf("not implemented: Pages - pages"))
 }
 
 // Footer is the resolver for the footer field.
 func (r *queryResolver) Footer(ctx context.Context) (*model.Footer, error) {
 	panic(fmt.Errorf("not implemented: Footer - footer"))
+}
+
+// Themes is the resolver for the themes field.
+func (r *queryResolver) Themes(ctx context.Context) ([]*model.Theme, error) {
+	panic(fmt.Errorf("not implemented: Themes - themes"))
 }
 
 // Role is the resolver for the role field.
@@ -147,3 +152,13 @@ type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type userResolver struct{ *Resolver }
 type websiteResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *queryResolver) Page(ctx context.Context) ([]*model.Page, error) {
+	panic(fmt.Errorf("not implemented: Page - page"))
+}

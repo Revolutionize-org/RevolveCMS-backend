@@ -25,6 +25,11 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	return user, nil
 }
 
+// Themes is the resolver for the themes field.
+func (r *queryResolver) Themes(ctx context.Context) ([]*model.Theme, error) {
+	panic(fmt.Errorf("not implemented: Themes - themes"))
+}
+
 func (r *queryResolver) Website(ctx context.Context) (*model.Website, error) {
 	// user, err := retrieveUser(ctx, r.UserRepo)
 	// if err != nil {
@@ -48,7 +53,7 @@ func (r *queryResolver) Header(ctx context.Context) (*model.Header, error) {
 	panic(fmt.Errorf("not implemented: Header - header"))
 }
 
-func (r *queryResolver) Page(ctx context.Context) ([]*model.Page, error) {
+func (r *queryResolver) Pages(ctx context.Context) ([]*model.Page, error) {
 	panic(fmt.Errorf("not implemented: Page - page"))
 }
 
