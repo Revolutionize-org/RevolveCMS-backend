@@ -14,4 +14,5 @@ type Resolver struct {
 	AuthService auth.Service
 	UserRepo    *repository.UserRepo
 	RoleRepo    *repository.RoleRepo
+	ThemeRepo   *repository.ThemeRepo
 }

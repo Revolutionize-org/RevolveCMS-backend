@@ -27,7 +27,7 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 
 // Themes is the resolver for the themes field.
 func (r *queryResolver) Themes(ctx context.Context) ([]*model.Theme, error) {
-	panic(fmt.Errorf("not implemented: Themes - themes"))
+	return r.ThemeRepo.GetAll()
 }
 
 func (r *queryResolver) Website(ctx context.Context) (*model.Website, error) {

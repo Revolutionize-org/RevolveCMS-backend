@@ -57,11 +57,6 @@ type PageInput struct {
 type Query struct {
 }
 
-type Theme struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
 type Website struct {
 	ID     string  `json:"id"`
 	Name   string  `json:"name"`

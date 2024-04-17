@@ -96,6 +96,9 @@ models:
   Role:
     model:
       - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.Role
+  Theme:
+    model:
+      - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.Theme
   UserInfo:
     model:
       - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.UserInfo
