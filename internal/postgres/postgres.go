@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/go-pg/pg/v10"
+	"github.com/go-pg/pg/v10/orm"
 )
 
 type DBLogger struct{}
@@ -23,5 +24,8 @@ func (d DBLogger) AfterQuery(ctx context.Context, event *pg.QueryEvent) error {
 }
 
 func New(opts *pg.Options) *pg.DB {
+	orm.SetTableNameInflector(func(s string) string {
+		return s
+	})
 	return pg.Connect(opts)
 }

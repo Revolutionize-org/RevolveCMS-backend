@@ -7,7 +7,6 @@ import (
 )
 
 type Token struct {
-	tableName struct{}  `pg:"token"`
 	ID        string    `json:"id"`
 	ExpiresAt time.Time `json:"expires_at"`
 }
