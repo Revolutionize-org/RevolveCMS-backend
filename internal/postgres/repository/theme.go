@@ -18,3 +18,9 @@ func (t *ThemeRepo) GetAll() ([]*model.Theme, error) {
 	err := t.DB.Model(&themes).Select()
 	return themes, err
 }
+
+func (t *ThemeRepo) GetByID(ID string) (*model.Theme, error) {
+	var theme model.Theme
+	err := t.DB.Model(&theme).Where("id = ?", ID).First()
+	return &theme, err
+}

@@ -12,8 +12,9 @@ type websiteResolver struct{ *Resolver }
 
 func (r *Resolver) Website() gql.WebsiteResolver { return &websiteResolver{r} }
 
-func (r *websiteResolver) Theme(ctx context.Context, obj *model.Website) (*model.Theme, error) {
-	panic(fmt.Errorf("not implemented: Theme - theme"))
+func (r *websiteResolver) Theme(ctx context.Context, website *model.Website) (*model.Theme, error) {
+	theme, err := r.ThemeRepo.GetByID(website.ThemeID)
+	return theme, err
 }
 
 // Header is the resolver for the header field.
