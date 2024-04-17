@@ -102,10 +102,9 @@ models:
   UserInfo:
     model:
       - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.UserInfo
-  UUID:
-    model:
-      - github.com/99designs/gqlgen/graphql.UUID
   Website:
+    model:
+      - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.Website
     fields:
       theme:
         resolver: true

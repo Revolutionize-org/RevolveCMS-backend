@@ -31,13 +31,11 @@ func (r *queryResolver) Themes(ctx context.Context) ([]*model.Theme, error) {
 }
 
 func (r *queryResolver) Website(ctx context.Context) (*model.Website, error) {
-	// user, err := retrieveUser(ctx, r.UserRepo)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// return r.WebsiteRepo.GetByUserID(user.ID)
-	return nil, nil
+	user, err := retrieveUser(ctx, r.UserRepo)
+	if err != nil {
+		return nil, err
+	}
+	return r.WebsiteRepo.GetByID(user.WebsiteID)
 }
 
 func retrieveUser(ctx context.Context, userRepo *repository.UserRepo) (*model.User, error) {
