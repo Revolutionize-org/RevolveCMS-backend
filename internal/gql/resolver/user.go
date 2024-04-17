@@ -17,6 +17,7 @@ func (r *userResolver) Role(ctx context.Context, user *model.User) (*model.Role,
 	if err != nil {
 		return nil, err
 	}
+	fmt.Print(role)
 	return &model.Role{ID: role.ID, Name: role.Name}, nil
 }
 

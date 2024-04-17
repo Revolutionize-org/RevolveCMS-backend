@@ -93,6 +93,9 @@ models:
         resolver: true
     model:
       - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.User
+  Role:
+    model:
+      - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.Role
   UserInfo:
     model:
       - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.UserInfo
