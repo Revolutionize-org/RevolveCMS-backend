@@ -17,7 +17,7 @@ INSERT INTO website(
     name,
     theme_id
 ) VALUES 
-    ('45955517-30ee-4310-b253-d0cd677cc92e', 'Revolutionize', '01faca9d-fa3c-4c2f-bb98-5fd4de0f9cc3')
+    ('45955517-30ee-4310-b253-d0cd677cc92e', 'Revolutionize', '01faca9d-fa3c-4c2f-bb98-5fd4de0f9cc3');
 
 INSERT INTO header (
     id,
