@@ -14,11 +14,11 @@ type Service interface {
 }
 
 type auth struct {
-	userRepo  *repository.UserRepo
-	tokenRepo *repository.TokenRepo
+	userRepo  repository.UserRepo
+	tokenRepo repository.TokenRepo
 }
 
-func New(userRepo *repository.UserRepo, tokenRepo *repository.TokenRepo) Service {
+func New(userRepo repository.UserRepo, tokenRepo repository.TokenRepo) Service {
 	return &auth{
 		userRepo:  userRepo,
 		tokenRepo: tokenRepo,

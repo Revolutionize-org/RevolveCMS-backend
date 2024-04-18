@@ -4,6 +4,7 @@ package resolver
 import (
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres/repository"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/service/auth"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/service/website"
 )
 
 // This file will not be regenerated automatically.
@@ -11,8 +12,9 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	AuthService auth.Service
-	UserRepo    *repository.UserRepo
-	RoleRepo    *repository.RoleRepo
-	WebsiteRepo repository.WebsiteRepo
+	AuthService    auth.Service
+	WebsiteService website.Service
+	UserRepo       repository.UserRepo
+	RoleRepo       repository.RoleRepo
+	WebsiteRepo    repository.WebsiteRepo
 }

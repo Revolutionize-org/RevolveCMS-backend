@@ -63,7 +63,7 @@ func parse(t, secret string) (jwt.MapClaims, error) {
 	return nil, errors.New("invalid token")
 }
 
-func Validate(t string, tokenRepo *repository.TokenRepo) (jwt.MapClaims, error) {
+func Validate(t string, tokenRepo repository.TokenRepo) (jwt.MapClaims, error) {
 	claims, err := parse(t, os.Getenv("REFRESH_TOKEN_SECRET"))
 	if err != nil {
 		return nil, err

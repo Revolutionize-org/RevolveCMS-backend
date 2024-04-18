@@ -9,8 +9,8 @@ type UserRepo struct {
 	DB *pg.DB
 }
 
-func NewUserRepo(DB *pg.DB) *UserRepo {
-	return &UserRepo{DB: DB}
+func NewUserRepo(DB *pg.DB) UserRepo {
+	return UserRepo{DB: DB}
 }
 
 func (u *UserRepo) GetByID(id string) (*model.User, error) {
