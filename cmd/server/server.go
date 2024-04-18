@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/rs/cors"
 
@@ -69,7 +71,7 @@ func createGraphQLServer(db *pg.DB) http.Handler {
 		repository.NewTokenRepo(db),
 	)
 
-	return middleware.Writer(handler.NewDefaultServer(gql.NewExecutableSchema(
+	srv := handler.New(gql.NewExecutableSchema(
 		gql.Config{
 			Resolvers: &resolver.Resolver{
 				AuthService: authService,
@@ -79,7 +81,17 @@ func createGraphQLServer(db *pg.DB) http.Handler {
 				WebsiteRepo: repository.NewWebsiteRepo(db),
 			},
 		},
-	)))
+	))
+
+	srv.AddTransport(transport.Options{})
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.POST{})
+
+	if os.Getenv("ENV") != "dev" {
+		srv.Use(extension.Introspection{})
+	}
+
+	return srv
 }
 
 func setupHTTPHandlers(srv http.Handler) {
@@ -89,7 +101,11 @@ func setupHTTPHandlers(srv http.Handler) {
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 	})
-	http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+
+	if os.Getenv("ENV") == "dev" {
+		http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+	}
+
 	http.Handle("/graphql", c.Handler(
 		middleware.Auth(
 			middleware.Request(
