@@ -16,5 +16,4 @@ type Resolver struct {
 	WebsiteService website.Service
 	UserRepo       repository.UserRepo
 	RoleRepo       repository.RoleRepo
-	WebsiteRepo    repository.WebsiteRepo
 }

@@ -21,6 +21,7 @@ import (
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres/repository"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/service/auth"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/service/website"
 	"github.com/go-pg/pg/v10"
 	"github.com/joho/godotenv"
 )
@@ -70,6 +71,8 @@ func connectToDB() *pg.DB {
 func createGraphQLServer(db *pg.DB) http.Handler {
 	userRepo := repository.NewUserRepo(db)
 
+	webisteRepo := website.New(repository.NewWebsiteRepo(db), userRepo)
+
 	authService := auth.New(
 		userRepo,
 		repository.NewTokenRepo(db),
@@ -78,10 +81,10 @@ func createGraphQLServer(db *pg.DB) http.Handler {
 	srv := handler.New(gql.NewExecutableSchema(
 		gql.Config{
 			Resolvers: &resolver.Resolver{
-				AuthService: authService,
-				UserRepo:    userRepo,
-				RoleRepo:    repository.NewRoleRepo(db),
-				WebsiteRepo: repository.NewWebsiteRepo(db),
+				AuthService:    authService,
+				WebsiteService: webisteRepo,
+				UserRepo:       userRepo,
+				RoleRepo:       repository.NewRoleRepo(db),
 			},
 		},
 	))

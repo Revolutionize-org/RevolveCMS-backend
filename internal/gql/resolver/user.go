@@ -20,5 +20,5 @@ func (r *userResolver) Role(ctx context.Context, user *model.User) (*model.Role,
 }
 
 func (r *userResolver) Website(ctx context.Context, user *model.User) (*model.Website, error) {
-	return r.WebsiteRepo.GetWebsiteByID(user.WebsiteID)
+	return r.WebsiteService.GetService().WebsiteRepo.GetWebsiteByID(user.WebsiteID)
 }
