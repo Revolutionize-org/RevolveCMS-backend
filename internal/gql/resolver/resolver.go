@@ -16,4 +16,5 @@ type Resolver struct {
 	RoleRepo    *repository.RoleRepo
 	ThemeRepo   *repository.ThemeRepo
 	WebsiteRepo *repository.WebsiteRepo
+	HeaderRepo  *repository.HeaderRepo
 }
