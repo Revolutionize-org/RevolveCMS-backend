@@ -3,6 +3,7 @@ package validation
 import (
 	"context"
 	"errors"
+	"os"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/go-playground/validator/v10"
@@ -27,12 +28,14 @@ func ValidateInput[T any](ctx context.Context, data T) error {
 
 	if len(validErr) > 0 {
 		for _, err := range validErr {
-			graphql.AddError(ctx, &gqlerror.Error{
-				Message: err.Error(),
-				Extensions: map[string]interface{}{
-					"field": err.Field(),
-				},
-			})
+			if os.Getenv("ENV") == "dev" {
+				graphql.AddError(ctx, &gqlerror.Error{
+					Message: err.Error(),
+					Extensions: map[string]interface{}{
+						"field": err.Field(),
+					},
+				})
+			}
 		}
 		return errors.New("invalid input received")
 	}

@@ -1,15 +1,19 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/rs/cors"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/resolver"
@@ -87,8 +91,17 @@ func createGraphQLServer(db *pg.DB) http.Handler {
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
 
-	if os.Getenv("ENV") != "dev" {
+	if os.Getenv("ENV") == "dev" {
 		srv.Use(extension.Introspection{})
+	} else {
+		srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
+			err := graphql.DefaultErrorPresenter(ctx, e)
+
+			if strings.Contains(err.Message, "Cannot query field") {
+				err.Message = "internal server error"
+			}
+			return err
+		})
 	}
 
 	return srv

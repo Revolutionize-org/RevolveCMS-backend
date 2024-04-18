@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -46,7 +45,6 @@ func Auth(next http.Handler) http.Handler {
 		}
 
 		if operationExemptFromAuth(gqlRequest.OperationName) {
-			fmt.Print("operationExemptFromAuth")
 			next.ServeHTTP(w, r)
 			return
 		}
