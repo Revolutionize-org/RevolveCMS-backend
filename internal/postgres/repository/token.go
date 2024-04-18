@@ -11,15 +11,21 @@ type Token struct {
 	ExpiresAt time.Time `json:"expires_at"`
 }
 
-type TokenRepo struct {
+type TokenRepo interface {
+	Get(jti string) (*Token, error)
+	Add(jti string, exp time.Time) error
+	Delete(id string) (bool, error)
+}
+
+type SqlTokenRepo struct {
 	DB *pg.DB
 }
 
-func NewTokenRepo(db *pg.DB) TokenRepo {
-	return TokenRepo{DB: db}
+func NewTokenRepo(db *pg.DB) SqlTokenRepo {
+	return SqlTokenRepo{DB: db}
 }
 
-func (tr *TokenRepo) Get(jti string) (*Token, error) {
+func (tr SqlTokenRepo) Get(jti string) (*Token, error) {
 	token := &Token{
 		ID: jti,
 	}
@@ -27,7 +33,7 @@ func (tr *TokenRepo) Get(jti string) (*Token, error) {
 	return token, err
 }
 
-func (tr *TokenRepo) Add(jti string, exp time.Time) error {
+func (tr SqlTokenRepo) Add(jti string, exp time.Time) error {
 	token := &Token{
 		ID:        jti,
 		ExpiresAt: exp,
@@ -38,7 +44,7 @@ func (tr *TokenRepo) Add(jti string, exp time.Time) error {
 	return err
 }
 
-func (tr *TokenRepo) Delete(id string) (bool, error) {
+func (tr SqlTokenRepo) Delete(id string) (bool, error) {
 	token := &Token{
 		ID: id,
 	}

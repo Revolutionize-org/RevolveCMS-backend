@@ -5,15 +5,19 @@ import (
 	"github.com/go-pg/pg/v10"
 )
 
-type RoleRepo struct {
+type RoleRepo interface {
+	GetByID(id string) (*model.Role, error)
+}
+
+type SqlRoleRepo struct {
 	DB *pg.DB
 }
 
-func NewRoleRepo(DB *pg.DB) RoleRepo {
-	return RoleRepo{DB: DB}
+func NewRoleRepo(DB *pg.DB) SqlRoleRepo {
+	return SqlRoleRepo{DB: DB}
 }
 
-func (r RoleRepo) GetByID(id string) (*model.Role, error) {
+func (r SqlRoleRepo) GetByID(id string) (*model.Role, error) {
 	var role model.Role
 	err := r.DB.Model(&role).Where("id = ?", id).First()
 	return &role, err
