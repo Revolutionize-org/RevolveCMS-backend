@@ -5,6 +5,6 @@ type Website struct {
 	Name    string  `json:"name"`
 	ThemeID string  `json:"theme_id"`
 	Header  *Header `json:"header,omitempty" pg:"-"`
-	Pages   []*Page `json:"pages" pg:"-"`
+	Pages   []*Page `json:"pages,omitempty" pg:"-"`
 	Footer  *Footer `json:"footer,omitempty" pg:"-"`
 }

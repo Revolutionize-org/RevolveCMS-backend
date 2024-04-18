@@ -2,7 +2,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
@@ -21,5 +20,5 @@ func (r *userResolver) Role(ctx context.Context, user *model.User) (*model.Role,
 }
 
 func (r *userResolver) Website(ctx context.Context, user *model.User) (*model.Website, error) {
-	panic(fmt.Errorf("not implemented: Website - website"))
+	return r.WebsiteRepo.GetWebsiteByID(user.WebsiteID)
 }

@@ -81,9 +81,7 @@ func createGraphQLServer(db *pg.DB) http.Handler {
 				AuthService: authService,
 				UserRepo:    userRepo,
 				RoleRepo:    repository.NewRoleRepo(db),
-				ThemeRepo:   repository.NewThemeRepo(db),
 				WebsiteRepo: repository.NewWebsiteRepo(db),
-				HeaderRepo:  repository.NewHeaderRepo(db),
 			},
 		},
 	))
