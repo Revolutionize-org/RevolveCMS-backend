@@ -4,11 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/cookie"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/userutil"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/validation"
+	"github.com/google/uuid"
 )
 
 type mutationResolver struct{ *Resolver }
@@ -36,19 +39,57 @@ func (r *mutationResolver) RefreshToken(ctx context.Context) (string, error) {
 	return r.AuthService.RefreshToken(ctx)
 }
 
-// CreateHeader is the resolver for the createHeader field.
-func (r *mutationResolver) CreateHeader(ctx context.Context, header model.HeaderInput) (*model.Header, error) {
-	panic(fmt.Errorf("not implemented: CreateHeader - createHeader"))
+func (r *mutationResolver) CreateHeader(ctx context.Context, h model.HeaderInput) (*model.Header, error) {
+	user, err := userutil.RetrieveUser(ctx, r.UserRepo)
+	if err != nil {
+		return nil, err
+	}
+
+	uuid, err := uuid.NewRandom()
+	if err != nil {
+		return nil, err
+	}
+
+	header := &model.Header{
+		ID:        uuid.String(),
+		Name:      h.Name,
+		Data:      h.Data,
+		WebsiteID: user.WebsiteID,
+	}
+
+	if err := r.WebsiteService.GetService().WebsiteRepo.CreateHeader(header); err != nil {
+		return nil, err
+	}
+	return header, nil
 }
 
-// DeleteHeader is the resolver for the deleteHeader field.
 func (r *mutationResolver) DeleteHeader(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteHeader - deleteHeader"))
+	if err := r.WebsiteService.GetService().WebsiteRepo.DeleteHeader(id); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
-// ModifyHeader is the resolver for the modifyHeader field.
-func (r *mutationResolver) ModifyHeader(ctx context.Context, header model.HeaderInput) (*model.Header, error) {
-	panic(fmt.Errorf("not implemented: ModifyHeader - modifyHeader"))
+func (r *mutationResolver) ModifyHeader(ctx context.Context, h model.HeaderInput) (*model.Header, error) {
+	user, err := userutil.RetrieveUser(ctx, r.UserRepo)
+	if err != nil {
+		return nil, err
+	}
+
+	timestampz := time.Now().Format(time.RFC3339)
+
+	header := &model.Header{
+		ID:        *h.ID,
+		Name:      h.Name,
+		Data:      h.Data,
+		UpdatedAt: timestampz,
+		WebsiteID: user.WebsiteID,
+	}
+
+	if err := r.WebsiteService.GetService().WebsiteRepo.ModifyHeader(header); err != nil {
+		return nil, err
+	}
+	return header, nil
 }
 
 // CreatePage is the resolver for the createPage field.

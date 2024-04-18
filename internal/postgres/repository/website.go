@@ -10,8 +10,11 @@ type WebsiteRepo interface {
 	GetAllThemes() ([]*model.Theme, error)
 	GetThemeByID(id string) (*model.Theme, error)
 	GetFooterByWebsiteID(id string) (*model.Footer, error)
-	GetHeaderByWebsiteID(id string) (*model.Header, error)
 	GetPagesByWebsiteID(id string) ([]*model.Page, error)
+	GetHeaderByWebsiteID(id string) (*model.Header, error)
+	CreateHeader(header *model.Header) error
+	DeleteHeader(id string) error
+	ModifyHeader(header *model.Header) error
 }
 
 type SqlWebsiteRepo struct {
@@ -44,6 +47,25 @@ func (w SqlWebsiteRepo) GetHeaderByWebsiteID(id string) (*model.Header, error) {
 	var header model.Header
 	err := w.DB.Model(&header).Where("website_id = ?", id).First()
 	return &header, err
+}
+
+func (w SqlWebsiteRepo) CreateHeader(header *model.Header) error {
+	_, err := w.DB.Model(header).Insert()
+	return err
+}
+
+func (w SqlWebsiteRepo) DeleteHeader(id string) error {
+	header := &model.Header{
+		ID: id,
+	}
+
+	_, err := w.DB.Model(header).WherePK().Delete()
+	return err
+}
+
+func (w SqlWebsiteRepo) ModifyHeader(header *model.Header) error {
+	_, err := w.DB.Model(header).WherePK().Update()
+	return err
 }
 
 func (w SqlWebsiteRepo) GetFooterByWebsiteID(id string) (*model.Footer, error) {
