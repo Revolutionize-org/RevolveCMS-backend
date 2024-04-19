@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/config"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/errorutil"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/middleware"
 )
 
@@ -49,7 +50,6 @@ func DeleteFromContext(ctx context.Context, name string) error {
 		MaxAge:   -1,
 		HttpOnly: true,
 	})
-
 	return nil
 }
 
@@ -58,7 +58,10 @@ func GetFromContext(ctx context.Context, name string) (string, error) {
 
 	cookie, err := req.Cookie(name)
 	if err != nil {
-		return "", err
+		if errors.Is(err, http.ErrNoCookie) {
+			return "", errors.New("no cookie present")
+		}
+		return "", errorutil.HandleError(err)
 	}
 
 	return cookie.Value, nil

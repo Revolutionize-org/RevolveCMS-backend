@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/cookie"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/errorutil"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/jwt"
 )
 
@@ -40,12 +41,14 @@ func (a *auth) deleteRefreshToken(ctx context.Context, err error) (bool, error) 
 }
 
 func (a *auth) deleteTokenByID(jti string) error {
-	deleted, err := a.tokenRepo.Delete(jti)
+	isDeleted, err := a.tokenRepo.Delete(jti)
 	if err != nil {
-		return err
+		return errorutil.HandleError(err)
 	}
-	if !deleted {
-		return errors.New("could not delete token")
+
+	if !isDeleted {
+		return errors.New("token not found")
 	}
+
 	return nil
 }

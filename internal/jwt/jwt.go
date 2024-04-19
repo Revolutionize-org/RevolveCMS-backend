@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/config"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/errorutil"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres/repository"
 	"github.com/golang-jwt/jwt/v5"
@@ -44,7 +45,8 @@ func New(subject string, expiration time.Time, secret string) (string, string, e
 func parse(t, secret string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(t, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			err := fmt.Sprintf("unexpected signing method: %v", token.Header["alg"])
+			return nil, errorutil.HandleError(errors.New(err))
 		}
 		return []byte(secret), nil
 	})
@@ -75,8 +77,11 @@ func Validate(t string, tokenRepo repository.TokenRepo) (jwt.MapClaims, error) {
 	}
 
 	token, err := tokenRepo.Get(jti)
-	if err := postgres.CheckErrNoRows(err, "invalid token"); err != nil {
-		return nil, err
+	if err != nil {
+		if err := postgres.CheckErrNoRows(err, "invalid token"); err != nil {
+			return nil, err
+		}
+		return nil, errorutil.HandleError(err)
 	}
 
 	if token.ExpiresAt.Before(time.Now()) {

@@ -7,8 +7,10 @@ import (
 	"time"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/cookie"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/errorutil"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/userutil"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/validation"
 	"github.com/google/uuid"
@@ -21,7 +23,7 @@ func (r *Resolver) Mutation() gql.MutationResolver { return &mutationResolver{r}
 func (r *mutationResolver) Login(ctx context.Context, userInfo model.UserInfo) (*model.AuthToken, error) {
 	_, err := cookie.GetFromContext(ctx, "refresh_token")
 	if err == nil {
-		return nil, errors.New("already logged in")
+		return nil, errors.New("you are already logged in")
 	}
 
 	if err := validation.ValidateInput[model.UserInfo](ctx, userInfo); err != nil {
@@ -42,12 +44,15 @@ func (r *mutationResolver) RefreshToken(ctx context.Context) (string, error) {
 func (r *mutationResolver) CreateHeader(ctx context.Context, h model.HeaderInput) (*model.Header, error) {
 	user, err := userutil.RetrieveUser(ctx, r.UserRepo)
 	if err != nil {
-		return nil, err
+		if err := postgres.CheckErrNoRows(err, "user not found"); err != nil {
+			return nil, err
+		}
+		return nil, errorutil.HandleError(err)
 	}
 
 	uuid, err := uuid.NewRandom()
 	if err != nil {
-		return nil, err
+		return nil, errorutil.HandleError(err)
 	}
 
 	header := &model.Header{
@@ -58,14 +63,19 @@ func (r *mutationResolver) CreateHeader(ctx context.Context, h model.HeaderInput
 	}
 
 	if err := r.WebsiteService.GetService().WebsiteRepo.CreateHeader(header); err != nil {
-		return nil, err
+		return nil, errorutil.HandleError(err)
 	}
 	return header, nil
 }
 
 func (r *mutationResolver) DeleteHeader(ctx context.Context, id string) (bool, error) {
-	if err := r.WebsiteService.GetService().WebsiteRepo.DeleteHeader(id); err != nil {
-		return false, err
+	isDeleted, err := r.WebsiteService.GetService().WebsiteRepo.DeleteHeader(id)
+	if err != nil {
+		return false, errorutil.HandleError(err)
+	}
+
+	if !isDeleted {
+		return false, errors.New("header not found")
 	}
 	return true, nil
 }
@@ -73,7 +83,10 @@ func (r *mutationResolver) DeleteHeader(ctx context.Context, id string) (bool, e
 func (r *mutationResolver) ModifyHeader(ctx context.Context, h model.HeaderInput) (*model.Header, error) {
 	user, err := userutil.RetrieveUser(ctx, r.UserRepo)
 	if err != nil {
-		return nil, err
+		if err := postgres.CheckErrNoRows(err, "user not found"); err != nil {
+			return nil, err
+		}
+		return nil, errorutil.HandleError(err)
 	}
 
 	timestampz := time.Now().Format(time.RFC3339)
@@ -87,12 +100,11 @@ func (r *mutationResolver) ModifyHeader(ctx context.Context, h model.HeaderInput
 	}
 
 	if err := r.WebsiteService.GetService().WebsiteRepo.ModifyHeader(header); err != nil {
-		return nil, err
+		return nil, errorutil.HandleError(err)
 	}
 	return header, nil
 }
 
-// CreatePage is the resolver for the createPage field.
 func (r *mutationResolver) CreatePage(ctx context.Context, page model.PageInput) (*model.Page, error) {
 	panic(fmt.Errorf("not implemented: CreatePage - createPage"))
 }

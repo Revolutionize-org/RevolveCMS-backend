@@ -48,10 +48,7 @@ func (tr SqlTokenRepo) Delete(id string) (bool, error) {
 	token := &Token{
 		ID: id,
 	}
-	result, err := tr.DB.Model(token).Where("id = ?", token.ID).Delete()
 
-	if err != nil {
-		return false, err
-	}
-	return result.RowsAffected() > 0, nil
+	res, err := tr.DB.Model(token).WherePK().Delete()
+	return res.RowsAffected() > 0, err
 }

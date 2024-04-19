@@ -3,7 +3,9 @@ package website
 import (
 	"context"
 
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/errorutil"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres/repository"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/userutil"
 )
@@ -13,7 +15,7 @@ type Service interface {
 	GetHeader(ctx context.Context) (*model.Header, error)
 	GetPages(ctx context.Context) ([]*model.Page, error)
 	GetFooter(ctx context.Context) (*model.Footer, error)
-	GetService() websiteService
+	GetService() *websiteService
 }
 
 type websiteService struct {
@@ -21,60 +23,80 @@ type websiteService struct {
 	UserRepo    repository.UserRepo
 }
 
-func New(webisteRepo repository.WebsiteRepo, userRepo repository.UserRepo) Service {
-	return websiteService{
-		WebsiteRepo: webisteRepo,
-		UserRepo:    userRepo,
+func New(websiteRepo repository.WebsiteRepo, UserRepo repository.UserRepo) Service {
+	return &websiteService{
+		WebsiteRepo: websiteRepo,
+		UserRepo:    UserRepo,
 	}
 }
 
-func (w websiteService) GetWebsite(ctx context.Context) (*model.Website, error) {
-	user, err := userutil.RetrieveUser(ctx, w.UserRepo)
+func (w *websiteService) GetWebsite(ctx context.Context) (*model.Website, error) {
+	_, website, err := w.retrieveUserAndWebsite(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return w.WebsiteRepo.GetWebsiteByID(user.WebsiteID)
+	return website, nil
 }
 
-func (w websiteService) GetHeader(ctx context.Context) (*model.Header, error) {
-	user, err := userutil.RetrieveUser(ctx, w.UserRepo)
+func (w *websiteService) GetHeader(ctx context.Context) (*model.Header, error) {
+	_, website, err := w.retrieveUserAndWebsite(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	webiste, err := w.WebsiteRepo.GetWebsiteByID(user.ID)
+	header, err := w.WebsiteRepo.GetHeaderByWebsiteID(website.ID)
 	if err != nil {
-		return nil, err
+		return nil, handleRepoError(err, "header not found")
 	}
-	return w.WebsiteRepo.GetHeaderByWebsiteID(webiste.ID)
+	return header, nil
 }
 
-func (w websiteService) GetPages(ctx context.Context) ([]*model.Page, error) {
-	user, err := userutil.RetrieveUser(ctx, w.UserRepo)
+func (w *websiteService) GetPages(ctx context.Context) ([]*model.Page, error) {
+	_, website, err := w.retrieveUserAndWebsite(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	webiste, err := w.WebsiteRepo.GetWebsiteByID(user.WebsiteID)
+	pages, err := w.WebsiteRepo.GetPagesByWebsiteID(website.ID)
 	if err != nil {
-		return nil, err
+		return nil, handleRepoError(err, "pages not found")
 	}
-	return w.WebsiteRepo.GetPagesByWebsiteID(webiste.ID)
+	return pages, nil
 }
 
-func (w websiteService) GetFooter(ctx context.Context) (*model.Footer, error) {
-	user, err := userutil.RetrieveUser(ctx, w.UserRepo)
+func (w *websiteService) GetFooter(ctx context.Context) (*model.Footer, error) {
+	_, website, err := w.retrieveUserAndWebsite(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	webiste, err := w.WebsiteRepo.GetWebsiteByID(user.WebsiteID)
+	footer, err := w.WebsiteRepo.GetFooterByWebsiteID(website.ID)
 	if err != nil {
-		return nil, err
+		return nil, handleRepoError(err, "footer not found")
 	}
-	return w.WebsiteRepo.GetFooterByWebsiteID(webiste.ID)
+	return footer, nil
 }
 
-func (w websiteService) GetService() websiteService {
+func (w *websiteService) GetService() *websiteService {
 	return w
+}
+
+func (w *websiteService) retrieveUserAndWebsite(ctx context.Context) (*model.User, *model.Website, error) {
+	user, err := userutil.RetrieveUser(ctx, w.UserRepo)
+	if err != nil {
+		return nil, nil, handleRepoError(err, "user not found")
+	}
+
+	website, err := w.WebsiteRepo.GetWebsiteByID(user.WebsiteID)
+	if err != nil {
+		return nil, nil, handleRepoError(err, "website not found")
+	}
+	return user, website, nil
+}
+
+func handleRepoError(err error, notFoundMessage string) error {
+	if err := postgres.CheckErrNoRows(err, notFoundMessage); err != nil {
+		return err
+	}
+	return errorutil.HandleError(err)
 }

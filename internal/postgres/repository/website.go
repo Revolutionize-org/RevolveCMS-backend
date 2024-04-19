@@ -13,7 +13,7 @@ type WebsiteRepo interface {
 	GetPagesByWebsiteID(id string) ([]*model.Page, error)
 	GetHeaderByWebsiteID(id string) (*model.Header, error)
 	CreateHeader(header *model.Header) error
-	DeleteHeader(id string) error
+	DeleteHeader(id string) (bool, error)
 	ModifyHeader(header *model.Header) error
 }
 
@@ -54,13 +54,13 @@ func (w SqlWebsiteRepo) CreateHeader(header *model.Header) error {
 	return err
 }
 
-func (w SqlWebsiteRepo) DeleteHeader(id string) error {
+func (w SqlWebsiteRepo) DeleteHeader(id string) (bool, error) {
 	header := &model.Header{
 		ID: id,
 	}
 
-	_, err := w.DB.Model(header).WherePK().Delete()
-	return err
+	res, err := w.DB.Model(header).WherePK().Delete()
+	return res.RowsAffected() > 0, err
 }
 
 func (w SqlWebsiteRepo) ModifyHeader(header *model.Header) error {

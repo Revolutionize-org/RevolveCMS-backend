@@ -7,16 +7,20 @@ import (
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/middleware"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
 )
 
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	userID, ok := ctx.Value(middleware.UserKey{}).(string)
 	if !ok {
-		return nil, errors.New("could not get user from context")
+		return nil, errors.New("internal server error")
 	}
 
 	user, err := r.UserRepo.GetByID(userID)
 	if err != nil {
+		if err := postgres.CheckErrNoRows(err, "user not found"); err != nil {
+			return nil, err
+		}
 		return nil, err
 	}
 

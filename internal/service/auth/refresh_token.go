@@ -7,6 +7,7 @@ import (
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/config"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/cookie"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/errorutil"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/jwt"
 )
 
@@ -31,7 +32,7 @@ func (a *auth) RefreshToken(ctx context.Context) (string, error) {
 
 	_, accessToken, err := jwt.New(subject, time.Now().Add(time.Hour*1), config.Config.Secret.AccessToken)
 	if err != nil {
-		return "", err
+		return "", errorutil.HandleError(err)
 	}
 
 	return accessToken, nil

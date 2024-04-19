@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/config"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/errorutil"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/golang-jwt/jwt/v5/request"
 )
@@ -40,7 +41,7 @@ func Auth(next http.Handler) http.Handler {
 
 		gqlRequest, err := parseGraphQLRequest(body)
 		if err != nil {
-			sendError(w, err, http.StatusBadRequest)
+			sendError(w, errorutil.HandleError(err), http.StatusBadRequest)
 			return
 		}
 
@@ -51,7 +52,7 @@ func Auth(next http.Handler) http.Handler {
 
 		claims, err := validateToken(r)
 		if err != nil {
-			sendError(w, err, http.StatusUnauthorized)
+			sendError(w, errorutil.HandleError(err), http.StatusUnauthorized)
 			return
 		}
 
