@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -15,6 +14,7 @@ import (
 	"github.com/rs/cors"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/config"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/resolver"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/middleware"
@@ -23,18 +23,9 @@ import (
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/service/auth"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/service/website"
 	"github.com/go-pg/pg/v10"
-	"github.com/joho/godotenv"
 )
 
-const defaultPort = "5000"
-
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	port := getPort()
 	db := connectToDB()
 	defer db.Close()
 
@@ -42,24 +33,16 @@ func main() {
 
 	setupHTTPHandlers(srv)
 
-	log.Printf("Connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
-}
-
-func getPort() string {
-	port := os.Getenv("API_PORT")
-	if port == "" {
-		port = defaultPort
-	}
-	return port
+	log.Printf("Connect to http://localhost:%s/ for GraphQL playground", config.Config.Api.Port)
+	log.Fatal(http.ListenAndServe(":"+config.Config.Api.Port, nil))
 }
 
 func connectToDB() *pg.DB {
 	db := postgres.New(&pg.Options{
 		Addr:       "host.docker.internal:5432",
-		User:       os.Getenv("POSTGRES_USER"),
-		Password:   os.Getenv("POSTGRES_PASSWORD"),
-		Database:   os.Getenv("POSTGRES_DB"),
+		User:       config.Config.Postgres.User,
+		Password:   config.Config.Postgres.Password,
+		Database:   config.Config.Postgres.DB,
 		MaxRetries: 3,
 		PoolSize:   10,
 	})
@@ -93,7 +76,7 @@ func createGraphQLServer(db *pg.DB) http.Handler {
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
 
-	if os.Getenv("ENV") == "dev" {
+	if config.Config.Api.Env == "dev" {
 		srv.Use(extension.Introspection{})
 	} else {
 		srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
@@ -117,9 +100,7 @@ func setupHTTPHandlers(srv http.Handler) {
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 	})
 
-	if os.Getenv("ENV") == "dev" {
-		http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
-	}
+	enablePlayground()
 
 	http.Handle("/graphql", c.Handler(
 		middleware.Auth(
@@ -127,4 +108,10 @@ func setupHTTPHandlers(srv http.Handler) {
 				middleware.Writer(srv))),
 	))
 
+}
+
+func enablePlayground() {
+	if config.Config.Api.Env == "dev" {
+		http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+	}
 }

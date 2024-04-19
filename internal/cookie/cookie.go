@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"os"
 	"time"
 
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/config"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/middleware"
 )
 
@@ -19,7 +19,7 @@ func AddToContext(ctx context.Context, name, value string, expires time.Time) er
 
 	var sameSiteMode http.SameSite
 
-	if os.Getenv("ENV") == "production" {
+	if config.Config.Api.Env == "production" {
 		sameSiteMode = http.SameSiteNoneMode
 	} else {
 		sameSiteMode = http.SameSiteLaxMode
@@ -31,7 +31,7 @@ func AddToContext(ctx context.Context, name, value string, expires time.Time) er
 		Expires:  expires,
 		SameSite: sameSiteMode,
 		HttpOnly: true,
-		Secure:   os.Getenv("ENV") == "production",
+		Secure:   config.Config.Api.Env == "production",
 	})
 	return nil
 }

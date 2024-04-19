@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"os"
 
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/config"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/golang-jwt/jwt/v5/request"
 )
@@ -74,7 +74,7 @@ func operationExemptFromAuth(operationName string) bool {
 
 func validateToken(r *http.Request) (jwt.MapClaims, error) {
 	token, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor, func(token *jwt.Token) (interface{}, error) {
-		secretKey := os.Getenv("ACCESS_TOKEN_SECRET")
+		secretKey := config.Config.Secret.AccessToken
 		return []byte(secretKey), nil
 	})
 	if err != nil {

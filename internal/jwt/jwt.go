@@ -3,9 +3,9 @@ package jwt
 import (
 	"errors"
 	"fmt"
-	"os"
 	"time"
 
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/config"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres/repository"
 	"github.com/golang-jwt/jwt/v5"
@@ -64,7 +64,7 @@ func parse(t, secret string) (jwt.MapClaims, error) {
 }
 
 func Validate(t string, tokenRepo repository.TokenRepo) (jwt.MapClaims, error) {
-	claims, err := parse(t, os.Getenv("REFRESH_TOKEN_SECRET"))
+	claims, err := parse(t, config.Config.Secret.RefreshToken)
 	if err != nil {
 		return nil, err
 	}

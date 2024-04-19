@@ -3,9 +3,10 @@ package validation
 import (
 	"context"
 	"errors"
-	"os"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/config"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
@@ -28,7 +29,7 @@ func ValidateInput[T any](ctx context.Context, data T) error {
 
 	if len(validErr) > 0 {
 		for _, err := range validErr {
-			if os.Getenv("ENV") == "dev" {
+			if config.Config.Api.Env == "dev" {
 				graphql.AddError(ctx, &gqlerror.Error{
 					Message: err.Error(),
 					Extensions: map[string]interface{}{
