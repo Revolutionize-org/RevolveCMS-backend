@@ -61,7 +61,7 @@ func GetFromContext(ctx context.Context, name string) (string, error) {
 		if errors.Is(err, http.ErrNoCookie) {
 			return "", errors.New("no cookie present")
 		}
-		return "", errorutil.HandleError(err)
+		return "", errorutil.HandleErrorDependingEnv(err)
 	}
 
 	return cookie.Value, nil

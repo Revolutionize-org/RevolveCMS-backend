@@ -41,7 +41,7 @@ func Auth(next http.Handler) http.Handler {
 
 		gqlRequest, err := parseGraphQLRequest(body)
 		if err != nil {
-			sendError(w, errorutil.HandleError(err), http.StatusBadRequest)
+			sendError(w, errorutil.HandleErrorDependingEnv(err), http.StatusBadRequest)
 			return
 		}
 
@@ -52,7 +52,7 @@ func Auth(next http.Handler) http.Handler {
 
 		claims, err := validateToken(r)
 		if err != nil {
-			sendError(w, errorutil.HandleError(err), http.StatusUnauthorized)
+			sendError(w, errorutil.HandleErrorDependingEnv(err), http.StatusUnauthorized)
 			return
 		}
 

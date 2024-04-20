@@ -3,17 +3,11 @@ package resolver
 import (
 	"context"
 	"errors"
-	"fmt"
-	"time"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/cookie"
-	"github.com/Revolutionize-org/RevolveCMS-backend/internal/errorutil"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
-	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
-	"github.com/Revolutionize-org/RevolveCMS-backend/internal/userutil"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/validation"
-	"github.com/google/uuid"
 )
 
 type mutationResolver struct{ *Resolver }
@@ -41,100 +35,65 @@ func (r *mutationResolver) RefreshToken(ctx context.Context) (string, error) {
 	return r.AuthService.RefreshToken(ctx)
 }
 
-func (r *mutationResolver) CreateHeader(ctx context.Context, h model.HeaderInput) (*model.Header, error) {
-	user, err := userutil.RetrieveUser(ctx, r.UserRepo)
-	if err != nil {
-		if err := postgres.CheckErrNoRows(err, "user not found"); err != nil {
-			return nil, err
-		}
-		return nil, errorutil.HandleError(err)
+func (r *mutationResolver) CreateHeader(ctx context.Context, header model.HeaderInput) (*model.Header, error) {
+	if err := validation.ValidateInput[model.HeaderInput](ctx, header); err != nil {
+		return nil, err
 	}
 
-	uuid, err := uuid.NewRandom()
-	if err != nil {
-		return nil, errorutil.HandleError(err)
+	return r.WebsiteService.CreateHeader(ctx, header)
+}
+
+func (r *mutationResolver) ModifyHeader(ctx context.Context, header model.HeaderInput) (*model.Header, error) {
+	if err := validation.ValidateInput[model.HeaderInput](ctx, header); err != nil {
+		return nil, err
 	}
 
-	header := &model.Header{
-		ID:        uuid.String(),
-		Name:      h.Name,
-		Data:      h.Data,
-		WebsiteID: user.WebsiteID,
-	}
-
-	if err := r.WebsiteService.GetService().WebsiteRepo.CreateHeader(header); err != nil {
-		return nil, errorutil.HandleError(err)
-	}
-	return header, nil
+	return r.WebsiteService.ModifyHeader(ctx, header)
 }
 
 func (r *mutationResolver) DeleteHeader(ctx context.Context, id string) (bool, error) {
-	isDeleted, err := r.WebsiteService.GetService().WebsiteRepo.DeleteHeader(id)
-	if err != nil {
-		return false, errorutil.HandleError(err)
-	}
-
-	if !isDeleted {
-		return false, errors.New("header not found")
-	}
-	return true, nil
-}
-
-func (r *mutationResolver) ModifyHeader(ctx context.Context, h model.HeaderInput) (*model.Header, error) {
-	user, err := userutil.RetrieveUser(ctx, r.UserRepo)
-	if err != nil {
-		if err := postgres.CheckErrNoRows(err, "user not found"); err != nil {
-			return nil, err
-		}
-		return nil, errorutil.HandleError(err)
-	}
-
-	timestampz := time.Now().Format(time.RFC3339)
-
-	header := &model.Header{
-		ID:        *h.ID,
-		Name:      h.Name,
-		Data:      h.Data,
-		UpdatedAt: timestampz,
-		WebsiteID: user.WebsiteID,
-	}
-
-	if err := r.WebsiteService.GetService().WebsiteRepo.ModifyHeader(header); err != nil {
-		return nil, errorutil.HandleError(err)
-	}
-	return header, nil
+	return r.WebsiteService.DeleteHeader(ctx, id)
 }
 
 func (r *mutationResolver) CreatePage(ctx context.Context, page model.PageInput) (*model.Page, error) {
-	panic(fmt.Errorf("not implemented: CreatePage - createPage"))
+	if err := validation.ValidateInput[model.PageInput](ctx, page); err != nil {
+		return nil, err
+	}
+
+	return r.WebsiteService.CreatePage(ctx, page)
 }
 
-// DeletePage is the resolver for the deletePage field.
 func (r *mutationResolver) DeletePage(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeletePage - deletePage"))
+	return r.WebsiteService.DeletePage(ctx, id)
 }
 
-// ModifyPage is the resolver for the modifyPage field.
 func (r *mutationResolver) ModifyPage(ctx context.Context, page model.PageInput) (*model.Page, error) {
-	panic(fmt.Errorf("not implemented: ModifyPage - modifyPage"))
+	if err := validation.ValidateInput[model.PageInput](ctx, page); err != nil {
+		return nil, err
+	}
+
+	return r.WebsiteService.ModifyPage(ctx, page)
 }
 
-// CreateFooter is the resolver for the createFooter field.
 func (r *mutationResolver) CreateFooter(ctx context.Context, footer model.FooterInput) (*model.Footer, error) {
-	panic(fmt.Errorf("not implemented: CreateFooter - createFooter"))
+	if err := validation.ValidateInput[model.FooterInput](ctx, footer); err != nil {
+		return nil, err
+	}
+
+	return r.WebsiteService.CreateFooter(ctx, footer)
 }
 
-// DeleteFooter is the resolver for the deleteFooter field.
 func (r *mutationResolver) DeleteFooter(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteFooter - deleteFooter"))
+	return r.WebsiteService.DeleteFooter(ctx, id)
 }
 
-// ModifyFooter is the resolver for the modifyFooter field.
 func (r *mutationResolver) ModifyFooter(ctx context.Context, footer model.FooterInput) (*model.Footer, error) {
-	panic(fmt.Errorf("not implemented: ModifyFooter - modifyFooter"))
+	if err := validation.ValidateInput[model.FooterInput](ctx, footer); err != nil {
+		return nil, err
+	}
+	return r.WebsiteService.ModifyFooter(ctx, footer)
 }
 
-// ModifyWebsiteTheme is the resolver for the modifyWebsiteTheme field.
 func (r *mutationResolver) ModifyWebsiteTheme(ctx context.Context, id string, themeID string) (*model.Website, error) {
-	panic(fmt.Errorf("not implemented: ModifyWebsiteTheme - modifyWebsiteTheme"))
+	return r.WebsiteService.ModifyWebsiteTheme(ctx, id, themeID)
 }

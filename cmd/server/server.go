@@ -15,11 +15,12 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/config"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/database"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/database/repository"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/resolver"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/middleware"
-	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
-	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres/repository"
+
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/service/auth"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/service/website"
 	"github.com/go-pg/pg/v10"
@@ -38,7 +39,7 @@ func main() {
 }
 
 func connectToDB() *pg.DB {
-	db := postgres.New(&pg.Options{
+	db := database.New(&pg.Options{
 		Addr:       "host.docker.internal:5432",
 		User:       config.Config.Postgres.User,
 		Password:   config.Config.Postgres.Password,
@@ -47,7 +48,7 @@ func connectToDB() *pg.DB {
 		PoolSize:   10,
 	})
 
-	db.AddQueryHook(postgres.DBLogger{})
+	db.AddQueryHook(database.DBLogger{})
 	return db
 }
 

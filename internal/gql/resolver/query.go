@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/errorutil"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/middleware"
-	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres"
 )
 
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
@@ -18,7 +18,7 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 
 	user, err := r.UserRepo.GetByID(userID)
 	if err != nil {
-		if err := postgres.CheckErrNoRows(err, "user not found"); err != nil {
+		if err := errorutil.CheckErrNoRows(err, "user not found"); err != nil {
 			return nil, err
 		}
 		return nil, err

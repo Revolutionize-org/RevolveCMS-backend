@@ -32,7 +32,7 @@ func (a *auth) RefreshToken(ctx context.Context) (string, error) {
 
 	_, accessToken, err := jwt.New(subject, time.Now().Add(time.Hour*1), config.Config.Secret.AccessToken)
 	if err != nil {
-		return "", errorutil.HandleError(err)
+		return "", errorutil.HandleErrorDependingEnv(err)
 	}
 
 	return accessToken, nil

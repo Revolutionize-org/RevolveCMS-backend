@@ -3,8 +3,8 @@ package auth
 import (
 	"context"
 
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/database/repository"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
-	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres/repository"
 )
 
 type Service interface {

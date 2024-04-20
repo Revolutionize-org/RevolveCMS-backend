@@ -43,7 +43,7 @@ func (a *auth) deleteRefreshToken(ctx context.Context, err error) (bool, error) 
 func (a *auth) deleteTokenByID(jti string) error {
 	isDeleted, err := a.tokenRepo.Delete(jti)
 	if err != nil {
-		return errorutil.HandleError(err)
+		return errorutil.HandleErrorDependingEnv(err)
 	}
 
 	if !isDeleted {

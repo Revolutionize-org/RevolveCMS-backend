@@ -2,7 +2,7 @@
 package resolver
 
 import (
-	"github.com/Revolutionize-org/RevolveCMS-backend/internal/postgres/repository"
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/database/repository"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/service/auth"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/service/website"
 )

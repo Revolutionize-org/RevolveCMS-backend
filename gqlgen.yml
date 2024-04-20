@@ -102,6 +102,15 @@ models:
   UserInfo:
     model:
       - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.UserInfo
+  Header:
+    model:
+      - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.Header
+  Footer:
+    model:
+      - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.Footer
+  Page:
+    model:
+      - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.Page
   Website:
     model:
       - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.Website

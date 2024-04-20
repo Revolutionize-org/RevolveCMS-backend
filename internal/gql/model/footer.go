@@ -1,16 +1,16 @@
 package model
 
-type Header struct {
-	ID        string `json:"id" validate:"uuid4"`
+type Footer struct {
+	ID        string `json:"id"`
 	Name      string `json:"name"`
 	Data      string `json:"data"`
-	CreatedAt string `json:"created_at" pg:"-"`
+	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 	WebsiteID string `json:"website_id"`
 }
 
-type HeaderInput struct {
-	ID   *string `json:"id,omitempty" validate:"uuid4"`
+type FooterInput struct {
+	ID   *string `json:"id,omitempty"`
 	Name string  `json:"name"`
 	Data string  `json:"data"`
 }
