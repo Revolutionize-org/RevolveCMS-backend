@@ -28,7 +28,7 @@ func (w *websiteService) GetHeader(ctx context.Context) (*model.Header, error) {
 func (w *websiteService) CreateHeader(ctx context.Context, h model.HeaderInput) (*model.Header, error) {
 	user, err := userutil.RetrieveUser(ctx, w.UserRepo)
 	if err != nil {
-		return nil, errorutil.HandleError(err, "user not found")
+		return nil, errorutil.HandleErrorOrNoRows(err, "user not found")
 	}
 
 	uuid, err := uuid.NewRandom()

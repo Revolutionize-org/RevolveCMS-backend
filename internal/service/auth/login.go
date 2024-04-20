@@ -17,7 +17,7 @@ import (
 func (a *auth) Login(ctx context.Context, userInfo model.UserInfo) (*model.AuthToken, error) {
 	user, err := a.userRepo.GetByEmail(userInfo.Email)
 	if err != nil {
-		return nil, errorutil.HandleError(err, "invalid email or password")
+		return nil, errorutil.HandleErrorOrNoRows(err, "invalid email or password")
 	}
 
 	if err := hashing.CompareHashAndSecret(user.PasswordHash, userInfo.Password); err != nil {

@@ -77,12 +77,12 @@ func (w *websiteService) GetService() *websiteService {
 func (w *websiteService) retrieveWebsiteViaCtx(ctx context.Context) (*model.User, *model.Website, error) {
 	user, err := userutil.RetrieveUser(ctx, w.UserRepo)
 	if err != nil {
-		return nil, nil, errorutil.HandleError(err, "user not found")
+		return nil, nil, errorutil.HandleErrorOrNoRows(err, "user not found")
 	}
 
 	website, err := w.WebsiteRepo.GetWebsiteByID(user.WebsiteID)
 	if err != nil {
-		return nil, nil, errorutil.HandleError(err, "website not found")
+		return nil, nil, errorutil.HandleErrorOrNoRows(err, "website not found")
 	}
 	return user, website, nil
 }

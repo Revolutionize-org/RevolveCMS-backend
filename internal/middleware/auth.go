@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 
@@ -52,7 +53,7 @@ func Auth(next http.Handler) http.Handler {
 
 		claims, err := validateToken(r)
 		if err != nil {
-			sendError(w, errorutil.HandleErrorDependingEnv(err), http.StatusUnauthorized)
+			sendError(w, err, http.StatusUnauthorized)
 			return
 		}
 
@@ -79,12 +80,12 @@ func validateToken(r *http.Request) (jwt.MapClaims, error) {
 		return []byte(secretKey), nil
 	})
 	if err != nil {
-		return nil, err
+		return nil, errors.New("invalid token provided")
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		return nil, err
+		return nil, errors.New("invalid token provided")
 	}
 
 	return claims, nil

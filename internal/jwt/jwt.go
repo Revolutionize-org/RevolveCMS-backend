@@ -77,7 +77,7 @@ func Validate(t string, tokenRepo repository.TokenRepo) (jwt.MapClaims, error) {
 
 	token, err := tokenRepo.Get(jti)
 	if err != nil {
-		return nil, errorutil.HandleError(err, "invalid token")
+		return nil, errorutil.HandleErrorOrNoRows(err, "invalid token")
 	}
 
 	if token.ExpiresAt.Before(time.Now()) {

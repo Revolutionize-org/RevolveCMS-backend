@@ -13,15 +13,12 @@ import (
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	userID, ok := ctx.Value(middleware.UserKey{}).(string)
 	if !ok {
-		return nil, errors.New("internal server error")
+		return nil, errors.New("no user provided")
 	}
 
 	user, err := r.UserRepo.GetByID(userID)
 	if err != nil {
-		if err := errorutil.CheckErrNoRows(err, "user not found"); err != nil {
-			return nil, err
-		}
-		return nil, err
+		return nil, errorutil.HandleErrorOrNoRows(err, "user not found")
 	}
 
 	return user, nil

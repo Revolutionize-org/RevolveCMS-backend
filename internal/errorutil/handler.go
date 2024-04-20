@@ -24,7 +24,7 @@ func CheckErrNoRows(err error, message string) error {
 	return nil
 }
 
-func HandleError(err error, message string) error {
+func HandleErrorOrNoRows(err error, message string) error {
 	if err := CheckErrNoRows(err, message); err != nil {
 		return err
 	}

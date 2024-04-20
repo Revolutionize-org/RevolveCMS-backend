@@ -20,7 +20,7 @@ func (w *websiteService) GetFooter(ctx context.Context) (*model.Footer, error) {
 
 	footer, err := w.WebsiteRepo.GetFooterByWebsiteID(website.ID)
 	if err != nil {
-		return nil, errorutil.HandleError(err, "footer not found")
+		return nil, errorutil.HandleErrorOrNoRows(err, "footer not found")
 	}
 	return footer, nil
 }
@@ -28,7 +28,7 @@ func (w *websiteService) GetFooter(ctx context.Context) (*model.Footer, error) {
 func (w *websiteService) CreateFooter(ctx context.Context, f model.FooterInput) (*model.Footer, error) {
 	user, err := userutil.RetrieveUser(ctx, w.UserRepo)
 	if err != nil {
-		return nil, errorutil.HandleError(err, "user not found")
+		return nil, errorutil.HandleErrorOrNoRows(err, "user not found")
 	}
 
 	uuid, err := uuid.NewRandom()

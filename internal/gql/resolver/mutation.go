@@ -2,12 +2,12 @@ package resolver
 
 import (
 	"context"
-	"errors"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/cookie"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/validation"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 type mutationResolver struct{ *Resolver }
@@ -17,7 +17,7 @@ func (r *Resolver) Mutation() gql.MutationResolver { return &mutationResolver{r}
 func (r *mutationResolver) Login(ctx context.Context, userInfo model.UserInfo) (*model.AuthToken, error) {
 	_, err := cookie.GetFromContext(ctx, "refresh_token")
 	if err == nil {
-		return nil, errors.New("you are already logged in")
+		return nil, gqlerror.Errorf("Already logged in")
 	}
 
 	if err := validation.ValidateInput[model.UserInfo](ctx, userInfo); err != nil {
