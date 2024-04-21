@@ -11,7 +11,7 @@ import (
 )
 
 func HandleErrorDependingEnv(err error) error {
-	if config.Config.Api.Env != "dev" {
+	if config.Config.Api.Env == "dev" {
 		return err
 	}
 	return errors.New("internal server error")
