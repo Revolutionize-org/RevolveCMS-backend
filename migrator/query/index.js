@@ -22,9 +22,9 @@ await client.connect();
  */
 createUser(
   client,
-  'admin',
-  'admin@proton.me',
-  'adminPassword',
+  'revolutionize',
+  'revolutionizeorg@proton.me',
+  'revolve',
   'd7de28aa-5028-4bee-8361-7d630d86da54',
   '45955517-30ee-4310-b253-d0cd677cc92e'
 );
