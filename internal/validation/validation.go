@@ -31,7 +31,7 @@ func ValidateInput[T any](ctx context.Context, data T) []*gqlerror.Error {
 	if len(validErr) > 0 {
 		for _, err := range validErr {
 			errors = append(errors, &gqlerror.Error{
-				Message: fmt.Sprintf("invalid %s received", err.Field()),
+				Message: fmt.Sprintf("invalid %s received", strings.ToLower(err.Field())),
 				Extensions: map[string]interface{}{
 					"field": strings.ToLower(err.Field()),
 				},
