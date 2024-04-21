@@ -53,15 +53,15 @@ func (w *websiteService) CreatePage(ctx context.Context, p model.PageInput) (*mo
 	return page, nil
 }
 
-func (w *websiteService) DeletePage(ctx context.Context, id string) (bool, error) {
-	isDeleted, err := w.WebsiteRepo.DeletePage(id)
+func (w *websiteService) DeletePage(ctx context.Context, page *model.Page) (bool, error) {
+	isDeleted, err := w.WebsiteRepo.DeletePage(page)
 
 	if err != nil {
 		return false, errorutil.HandleErrorDependingEnv(err)
 	}
 
 	if !isDeleted {
-		return false, errors.New("header not found")
+		return false, errors.New("page not found")
 	}
 	return true, nil
 }

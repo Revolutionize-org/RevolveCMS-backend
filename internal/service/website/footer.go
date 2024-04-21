@@ -51,8 +51,9 @@ func (w *websiteService) CreateFooter(ctx context.Context, f model.FooterInput) 
 	}
 	return footer, nil
 }
-func (w *websiteService) DeleteFooter(ctx context.Context, id string) (bool, error) {
-	isDeleted, err := w.WebsiteRepo.DeleteFooter(id)
+
+func (w *websiteService) DeleteFooter(ctx context.Context, footer *model.Footer) (bool, error) {
+	isDeleted, err := w.WebsiteRepo.DeleteFooter(footer)
 
 	if err != nil {
 		return false, errorutil.HandleErrorDependingEnv(err)

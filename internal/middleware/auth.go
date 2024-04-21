@@ -34,7 +34,7 @@ func Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			http.Error(w, "Failed to read request body: "+err.Error(), http.StatusBadRequest)
+			http.Error(w, "Failed to read request", http.StatusBadRequest)
 			return
 		}
 
@@ -80,7 +80,7 @@ func validateToken(r *http.Request) (jwt.MapClaims, error) {
 		return []byte(secretKey), nil
 	})
 	if err != nil {
-		return nil, errors.New("invalid token provided")
+		return nil, err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)

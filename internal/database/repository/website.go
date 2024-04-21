@@ -14,17 +14,17 @@ type WebsiteRepo interface {
 
 	GetFooterByWebsiteID(id string) (*model.Footer, error)
 	CreateFooter(footer *model.Footer) error
-	DeleteFooter(id string) (bool, error)
+	DeleteFooter(f *model.Footer) (bool, error)
 	ModifyFooter(footer *model.Footer) (bool, error)
 
 	GetPagesByWebsiteID(id string) ([]*model.Page, error)
 	CreatePage(page *model.Page) error
-	DeletePage(id string) (bool, error)
+	DeletePage(p *model.Page) (bool, error)
 	ModifyPage(page *model.Page) (bool, error)
 
 	GetHeaderByWebsiteID(id string) (*model.Header, error)
 	CreateHeader(header *model.Header) error
-	DeleteHeader(id string) (bool, error)
+	DeleteHeader(h *model.Header) (bool, error)
 	ModifyHeader(header *model.Header) (bool, error)
 }
 
@@ -43,6 +43,11 @@ func (w *SqlWebsiteRepo) GetWebsiteByID(id string) (*model.Website, error) {
 }
 
 func (w *SqlWebsiteRepo) ModiftyWebsiteTheme(website *model.Website) (bool, error) {
+	_, err := w.GetThemeByID(website.ThemeID)
+	if err != nil {
+		return false, err
+	}
+
 	res, err := w.DB.Model(website).WherePK().UpdateNotZero()
 	return res.RowsAffected() > 0, err
 }
@@ -70,11 +75,7 @@ func (w *SqlWebsiteRepo) CreateHeader(header *model.Header) error {
 	return err
 }
 
-func (w *SqlWebsiteRepo) DeleteHeader(id string) (bool, error) {
-	header := &model.Header{
-		ID: id,
-	}
-
+func (w *SqlWebsiteRepo) DeleteHeader(header *model.Header) (bool, error) {
 	res, err := w.DB.Model(header).WherePK().Delete()
 	return res.RowsAffected() > 0, err
 }
@@ -95,10 +96,7 @@ func (w *SqlWebsiteRepo) CreateFooter(footer *model.Footer) error {
 	return err
 }
 
-func (w *SqlWebsiteRepo) DeleteFooter(id string) (bool, error) {
-	footer := &model.Footer{
-		ID: id,
-	}
+func (w *SqlWebsiteRepo) DeleteFooter(footer *model.Footer) (bool, error) {
 	res, err := w.DB.Model(footer).WherePK().Delete()
 	return res.RowsAffected() > 0, err
 }
@@ -114,10 +112,7 @@ func (w *SqlWebsiteRepo) GetPagesByWebsiteID(id string) ([]*model.Page, error) {
 	return pages, err
 }
 
-func (w *SqlWebsiteRepo) DeletePage(id string) (bool, error) {
-	page := &model.Page{
-		ID: id,
-	}
+func (w *SqlWebsiteRepo) DeletePage(page *model.Page) (bool, error) {
 	res, err := w.DB.Model(page).WherePK().Delete()
 	return res.RowsAffected() > 0, err
 }

@@ -3,10 +3,10 @@ package validation
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strings"
 
-	"github.com/99designs/gqlgen/graphql"
-	"github.com/Revolutionize-org/RevolveCMS-backend/internal/config"
-
+	"github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model"
 	"github.com/go-playground/validator/v10"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
@@ -24,22 +24,57 @@ func ValidateStruct[T any](data T) validator.ValidationErrors {
 	return nil
 }
 
-func ValidateInput[T any](ctx context.Context, data T) error {
+func ValidateInput[T any](ctx context.Context, data T) []*gqlerror.Error {
 	validErr := ValidateStruct[T](data)
+	var errors []*gqlerror.Error
 
 	if len(validErr) > 0 {
 		for _, err := range validErr {
-			if config.Config.Api.Env == "dev" {
-				graphql.AddError(ctx, &gqlerror.Error{
-					Message: err.Error(),
-					Extensions: map[string]interface{}{
-						"field": err.Field(),
-					},
-				})
-			}
+			errors = append(errors, &gqlerror.Error{
+				Message: fmt.Sprintf("invalid %s received", err.Field()),
+				Extensions: map[string]interface{}{
+					"field": strings.ToLower(err.Field()),
+				},
+			})
+
 		}
-		return errors.New("invalid input received")
+	}
+	return errors
+}
+
+func ValidatePageInput(page model.PageInput) error {
+	if page.Name == "" {
+		return errors.New("invalid name received")
 	}
 
+	if page.Slug == "" {
+		return errors.New("invalid slug received")
+	}
+
+	if page.Data == "" {
+		return errors.New("invalid data received")
+	}
+	return nil
+}
+
+func ValidateHeaderInput(header model.HeaderInput) error {
+	if header.Name == "" {
+		return errors.New("invalid name received")
+	}
+
+	if header.Data == "" {
+		return errors.New("invalid data received")
+	}
+	return nil
+}
+
+func ValidateFooterInput(footer model.FooterInput) error {
+	if footer.Name == "" {
+		return errors.New("invalid name received")
+	}
+
+	if footer.Data == "" {
+		return errors.New("invalid data received")
+	}
 	return nil
 }

@@ -73,8 +73,8 @@ func (w *websiteService) ModifyHeader(ctx context.Context, h model.HeaderInput) 
 	return header, nil
 }
 
-func (w *websiteService) DeleteHeader(ctx context.Context, id string) (bool, error) {
-	isDeleted, err := w.WebsiteRepo.DeleteHeader(id)
+func (w *websiteService) DeleteHeader(ctx context.Context, header *model.Header) (bool, error) {
+	isDeleted, err := w.WebsiteRepo.DeleteHeader(header)
 
 	if err != nil {
 		return false, errorutil.HandleErrorDependingEnv(err)

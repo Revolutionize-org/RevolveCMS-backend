@@ -12,21 +12,21 @@ import (
 
 type Service interface {
 	GetWebsite(ctx context.Context) (*model.Website, error)
-	ModifyWebsiteTheme(ctx context.Context, id string, themeID string) (*model.Website, error)
+	ModifyWebsiteTheme(ctx context.Context, website *model.Website, theme *model.Theme) (*model.Website, error)
 
 	GetHeader(ctx context.Context) (*model.Header, error)
 	CreateHeader(ctx context.Context, h model.HeaderInput) (*model.Header, error)
-	DeleteHeader(ctx context.Context, id string) (bool, error)
+	DeleteHeader(ctx context.Context, h *model.Header) (bool, error)
 	ModifyHeader(ctx context.Context, h model.HeaderInput) (*model.Header, error)
 
 	GetPages(ctx context.Context) ([]*model.Page, error)
 	CreatePage(ctx context.Context, p model.PageInput) (*model.Page, error)
-	DeletePage(ctx context.Context, id string) (bool, error)
+	DeletePage(ctx context.Context, p *model.Page) (bool, error)
 	ModifyPage(ctx context.Context, p model.PageInput) (*model.Page, error)
 
 	GetFooter(ctx context.Context) (*model.Footer, error)
 	CreateFooter(ctx context.Context, h model.FooterInput) (*model.Footer, error)
-	DeleteFooter(ctx context.Context, id string) (bool, error)
+	DeleteFooter(ctx context.Context, f *model.Footer) (bool, error)
 	ModifyFooter(ctx context.Context, h model.FooterInput) (*model.Footer, error)
 
 	GetService() *websiteService
@@ -52,16 +52,11 @@ func (w *websiteService) GetWebsite(ctx context.Context) (*model.Website, error)
 	return website, nil
 }
 
-func (w *websiteService) ModifyWebsiteTheme(ctx context.Context, id string, themeID string) (*model.Website, error) {
-	_, website, err := w.retrieveWebsiteViaCtx(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	website.ThemeID = themeID
+func (w *websiteService) ModifyWebsiteTheme(ctx context.Context, website *model.Website, theme *model.Theme) (*model.Website, error) {
+	website.ThemeID = theme.ID
 	didUpdate, err := w.WebsiteRepo.ModiftyWebsiteTheme(website)
 	if err != nil {
-		return nil, errorutil.HandleErrorDependingEnv(err)
+		return nil, errorutil.HandleErrorOrNoRows(err, "website not found")
 	}
 
 	if !didUpdate {
