@@ -14,6 +14,5 @@ func RetrieveUser(ctx context.Context, userRepo repository.UserRepo) (*model.Use
 	if !ok {
 		return nil, errors.New("could not get user from context")
 	}
-
 	return userRepo.GetByID(userID)
 }

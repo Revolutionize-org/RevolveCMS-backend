@@ -32,7 +32,7 @@ func main() {
 
 	srv := createGraphQLServer(db)
 
-	setupHTTPHandlers(srv)
+	setupHTTPHandlers(srv, db)
 
 	log.Printf("Connect to http://localhost:%s/ for GraphQL playground", config.Config.Api.Port)
 	log.Fatal(http.ListenAndServe(":"+config.Config.Api.Port, nil))
@@ -76,24 +76,14 @@ func createGraphQLServer(db *pg.DB) http.Handler {
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
+	srv.Use(extension.FixedComplexityLimit(50))
 
-	if config.Config.Api.Env == "dev" {
-		srv.Use(extension.Introspection{})
-	} else {
-		srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
-			err := graphql.DefaultErrorPresenter(ctx, e)
-
-			if strings.Contains(err.Message, "Cannot query field") {
-				err.Message = "internal server error"
-			}
-			return err
-		})
-	}
+	enableIntrospection(srv)
 
 	return srv
 }
 
-func setupHTTPHandlers(srv http.Handler) {
+func setupHTTPHandlers(srv http.Handler, db *pg.DB) {
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:8080", "http://localhost:3001"},
 		AllowCredentials: true,
@@ -108,11 +98,25 @@ func setupHTTPHandlers(srv http.Handler) {
 			middleware.Request(
 				middleware.Writer(srv))),
 	))
-
 }
 
 func enablePlayground() {
 	if config.Config.Api.Env == "dev" {
 		http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+	}
+}
+
+func enableIntrospection(srv *handler.Server) {
+	if config.Config.Api.Env == "dev" {
+		srv.Use(extension.Introspection{})
+	} else {
+		srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
+			err := graphql.DefaultErrorPresenter(ctx, e)
+
+			if strings.Contains(err.Message, "Cannot query field") {
+				err.Message = "internal server error"
+			}
+			return err
+		})
 	}
 }
