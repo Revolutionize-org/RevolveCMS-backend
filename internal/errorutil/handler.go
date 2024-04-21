@@ -3,7 +3,6 @@ package errorutil
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/config"
@@ -20,7 +19,6 @@ func HandleErrorDependingEnv(err error) error {
 
 func CheckErrNoRows(err error, message string) error {
 	if err != nil {
-		fmt.Print(pg.ErrNoRows.Error())
 		if err.Error() == pg.ErrNoRows.Error() {
 			return errors.New(message)
 		}

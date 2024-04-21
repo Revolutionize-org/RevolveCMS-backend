@@ -1,15 +1,12 @@
 package middleware
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
-	"io"
 	"net/http"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/config"
-	"github.com/Revolutionize-org/RevolveCMS-backend/internal/errorutil"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/golang-jwt/jwt/v5/request"
 )
@@ -32,19 +29,7 @@ type UserKey struct{}
 
 func Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		body, err := io.ReadAll(r.Body)
-		if err != nil {
-			http.Error(w, "Failed to read request", http.StatusBadRequest)
-			return
-		}
-
-		r.Body = io.NopCloser(bytes.NewBuffer(body))
-
-		gqlRequest, err := parseGraphQLRequest(body)
-		if err != nil {
-			sendError(w, errorutil.HandleErrorDependingEnv(err), http.StatusBadRequest)
-			return
-		}
+		gqlRequest := r.Context().Value(GraphQLRequestKey{}).(*GraphQLRequest)
 
 		if operationExemptFromAuth(gqlRequest.OperationName) {
 			next.ServeHTTP(w, r)
@@ -60,14 +45,6 @@ func Auth(next http.Handler) http.Handler {
 		ctx := context.WithValue(r.Context(), UserKey{}, claims["sub"])
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
-}
-
-func parseGraphQLRequest(body []byte) (*GraphQLRequest, error) {
-	var gqlRequest GraphQLRequest
-	if err := json.Unmarshal(body, &gqlRequest); err != nil {
-		return nil, err
-	}
-	return &gqlRequest, nil
 }
 
 func operationExemptFromAuth(operationName string) bool {

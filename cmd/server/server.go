@@ -32,7 +32,7 @@ func main() {
 
 	srv := createGraphQLServer(db)
 
-	setupHTTPHandlers(srv, db)
+	setupHTTPHandlers(srv)
 
 	log.Printf("Connect to http://localhost:%s/ for GraphQL playground", config.Config.Api.Port)
 	log.Fatal(http.ListenAndServe(":"+config.Config.Api.Port, nil))
@@ -83,7 +83,7 @@ func createGraphQLServer(db *pg.DB) http.Handler {
 	return srv
 }
 
-func setupHTTPHandlers(srv http.Handler, db *pg.DB) {
+func setupHTTPHandlers(srv http.Handler) {
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:8080", "http://localhost:3001"},
 		AllowCredentials: true,
@@ -94,9 +94,13 @@ func setupHTTPHandlers(srv http.Handler, db *pg.DB) {
 	enablePlayground()
 
 	http.Handle("/graphql", c.Handler(
-		middleware.Auth(
-			middleware.Request(
-				middleware.Writer(srv))),
+		middleware.Limiter(
+			middleware.Auth(
+				middleware.Request(
+					middleware.Writer(srv),
+				),
+			),
+		),
 	))
 }
 
