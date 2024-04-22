@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -39,17 +42,39 @@ func main() {
 }
 
 func connectToDB() *pg.DB {
-	db := database.New(&pg.Options{
-		Addr:       "host.docker.internal:5432",
-		User:       config.Config.Postgres.User,
-		Password:   config.Config.Postgres.Password,
-		Database:   config.Config.Postgres.DB,
-		MaxRetries: 3,
-		PoolSize:   10,
-	})
+	opts, err := pg.ParseURL(config.Config.Postgres.URL)
+	if err != nil {
+		panic(err)
+	}
+
+	opts.PoolSize = 10
+	opts.MaxRetries = 3
+
+	if config.Config.Api.Env != "dev" {
+		configTLS(opts)
+	}
+
+	db := database.New(opts)
 
 	db.AddQueryHook(database.DBLogger{})
 	return db
+}
+
+func configTLS(opts *pg.Options) {
+	caCeret, err := os.ReadFile("ca.pem")
+	if err != nil {
+		panic(err)
+	}
+
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCeret)
+
+	tlsConfig := &tls.Config{
+		RootCAs:            caCertPool,
+		InsecureSkipVerify: false,
+		ServerName:         config.Config.Postgres.Host,
+	}
+	opts.TLSConfig = tlsConfig
 }
 
 func createGraphQLServer(db *pg.DB) http.Handler {
