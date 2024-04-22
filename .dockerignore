@@ -20,6 +20,7 @@
 **/bin
 **/charts
 **/docker-compose*
+migrator/
 **/compose*
 **/Dockerfile*
 **/node_modules
