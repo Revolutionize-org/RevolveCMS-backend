@@ -13,9 +13,10 @@ import (
 
 // Constants for operation names that do not require authentication
 const (
-	OpLogin        = "Login"
-	OpLogout       = "Logout"
-	OpRefreshToken = "RefreshToken"
+	OpLogin         = "Login"
+	OpLogout        = "Logout"
+	OpRefreshToken  = "RefreshToken"
+	OpIntroSpection = "IntrospectionQuery"
 )
 
 // GraphQLRequest represents a GraphQL request structure
@@ -48,7 +49,7 @@ func Auth(next http.Handler) http.Handler {
 }
 
 func operationExemptFromAuth(operationName string) bool {
-	return operationName == OpLogin || operationName == OpLogout || operationName == OpRefreshToken
+	return operationName == OpLogin || operationName == OpLogout || operationName == OpRefreshToken || operationName == OpIntroSpection
 }
 
 func validateToken(r *http.Request) (jwt.MapClaims, error) {
