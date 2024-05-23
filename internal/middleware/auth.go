@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/Revolutionize-org/RevolveCMS-backend/internal/config"
 	"github.com/golang-jwt/jwt/v5"
@@ -17,7 +18,6 @@ const (
 	OpLogout        = "Logout"
 	OpRefreshToken  = "RefreshToken"
 	OpIntroSpection = "IntrospectionQuery"
-	OpWebsite       = "Website"
 )
 
 // GraphQLRequest represents a GraphQL request structure
@@ -34,19 +34,19 @@ func Auth(next http.Handler) http.Handler {
 		gqlRequest := r.Context().Value(GraphQLRequestKey{}).(*GraphQLRequest)
 
 		if operationExemptFromAuth(gqlRequest.OperationName) {
+			next.ServeHTTP(w, r)
+			return
+		}
 
-			if gqlRequest.OperationName == OpWebsite {
-				userID := r.Header.Get("X-User-ID")
-				if userID == "" {
-					sendError(w, errors.New("no user provided"), http.StatusUnauthorized)
-					return
-				}
-
-				ctx := context.WithValue(r.Context(), UserKey{}, userID)
-				next.ServeHTTP(w, r.WithContext(ctx))
+		if strings.Contains(gqlRequest.Query, "website") {
+			userID := r.Header.Get("X-User-ID")
+			if userID == "" {
+				sendError(w, errors.New("no user provided"), http.StatusUnauthorized)
 				return
 			}
-			next.ServeHTTP(w, r)
+
+			ctx := context.WithValue(r.Context(), UserKey{}, userID)
+			next.ServeHTTP(w, r.WithContext(ctx))
 			return
 		}
 
@@ -62,7 +62,7 @@ func Auth(next http.Handler) http.Handler {
 }
 
 func operationExemptFromAuth(operationName string) bool {
-	return operationName == OpLogin || operationName == OpLogout || operationName == OpRefreshToken || operationName == OpIntroSpection || operationName == OpWebsite
+	return operationName == OpLogin || operationName == OpLogout || operationName == OpRefreshToken || operationName == OpIntroSpection
 }
 
 func validateToken(r *http.Request) (jwt.MapClaims, error) {
