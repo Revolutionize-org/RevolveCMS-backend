@@ -96,6 +96,15 @@ models:
   Role:
     model:
       - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.Role
+  HeaderInput:
+    model:
+      - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.HeaderInput
+  FooterInput:
+    model:
+      - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.FooterInput
+  PageInput:
+    model:
+      - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.PageInput
   Theme:
     model:
       - github.com/Revolutionize-org/RevolveCMS-backend/internal/gql/model.Theme

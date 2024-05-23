@@ -12,6 +12,7 @@ import (
 func RetrieveUser(ctx context.Context, userRepo repository.UserRepo) (*model.User, error) {
 	userID, ok := ctx.Value(middleware.UserKey{}).(string)
 	if !ok {
+
 		return nil, errors.New("could not get user from context")
 	}
 	return userRepo.GetByID(userID)

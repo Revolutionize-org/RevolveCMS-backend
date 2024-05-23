@@ -17,6 +17,7 @@ const (
 	OpLogout        = "Logout"
 	OpRefreshToken  = "RefreshToken"
 	OpIntroSpection = "IntrospectionQuery"
+	OpWebsite       = "Website"
 )
 
 // GraphQLRequest represents a GraphQL request structure
@@ -33,6 +34,18 @@ func Auth(next http.Handler) http.Handler {
 		gqlRequest := r.Context().Value(GraphQLRequestKey{}).(*GraphQLRequest)
 
 		if operationExemptFromAuth(gqlRequest.OperationName) {
+
+			if gqlRequest.OperationName == OpWebsite {
+				userID := r.Header.Get("X-User-ID")
+				if userID == "" {
+					sendError(w, errors.New("no user provided"), http.StatusUnauthorized)
+					return
+				}
+
+				ctx := context.WithValue(r.Context(), UserKey{}, userID)
+				next.ServeHTTP(w, r.WithContext(ctx))
+				return
+			}
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -49,7 +62,7 @@ func Auth(next http.Handler) http.Handler {
 }
 
 func operationExemptFromAuth(operationName string) bool {
-	return operationName == OpLogin || operationName == OpLogout || operationName == OpRefreshToken || operationName == OpIntroSpection
+	return operationName == OpLogin || operationName == OpLogout || operationName == OpRefreshToken || operationName == OpIntroSpection || operationName == OpWebsite
 }
 
 func validateToken(r *http.Request) (jwt.MapClaims, error) {
