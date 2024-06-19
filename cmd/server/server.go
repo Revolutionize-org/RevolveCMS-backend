@@ -109,38 +109,24 @@ func createGraphQLServer(db *pg.DB) http.Handler {
 }
 
 func setupHTTPHandlers(srv http.Handler) {
-	// 	c := cors.New(cors.Options{
-	// 		AllowedOrigins:   []string{"http://localhost:8080", "http://localhost:3001", "https://client-revolve-cms.vercel.app", "https://revolve-cms-frontend.vercel.app/"},
-	// 		AllowCredentials: true,
-	// 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
-	// 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
-	// 	})
-
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
+		AllowedOrigins:   []string{"http://localhost:8000", "http://localhost:3001", "https://client-revolve-cms.vercel.app/", "https://revolve-cms-frontend.vercel.app/"},
 		AllowCredentials: true,
-		AllowedMethods:   []string{"*"},
-		AllowedHeaders:   []string{"Authorization", "Content-Type"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type", "X-User-ID"},
 	})
 
 	enablePlayground()
 
-	graphqlHandler := middleware.Limiter(
-		middleware.Auth(
-			middleware.Request(
-				middleware.Writer(srv),
+	http.Handle("/graphql", c.Handler(
+		middleware.Limiter(
+			middleware.Auth(
+				middleware.Request(
+					middleware.Writer(srv),
+				),
 			),
 		),
-	)
-
-	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodOptions {
-			c.HandlerFunc(w, r)
-			return
-		}
-
-		graphqlHandler.ServeHTTP(w, r)
-	})
+	))
 }
 
 func enablePlayground() {
