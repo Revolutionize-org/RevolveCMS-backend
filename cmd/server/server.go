@@ -125,15 +125,22 @@ func setupHTTPHandlers(srv http.Handler) {
 
 	enablePlayground()
 
-	http.Handle("/graphql", c.Handler(
-		middleware.Limiter(
-			middleware.Auth(
-				middleware.Request(
-					middleware.Writer(srv),
-				),
+	graphqlHandler := middleware.Limiter(
+		middleware.Auth(
+			middleware.Request(
+				middleware.Writer(srv),
 			),
 		),
-	))
+	)
+
+	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodOptions {
+			c.HandlerFunc(w, r)
+			return
+		}
+
+		graphqlHandler.ServeHTTP(w, r)
+	})
 }
 
 func enablePlayground() {
