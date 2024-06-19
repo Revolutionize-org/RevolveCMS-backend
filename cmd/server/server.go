@@ -110,7 +110,7 @@ func createGraphQLServer(db *pg.DB) http.Handler {
 
 func setupHTTPHandlers(srv http.Handler) {
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:8080", "http://localhost:3001", "https://client-revolve-cms.vercel.app", "https://revolve-cms-frontend.vercel.app/"},
+		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
